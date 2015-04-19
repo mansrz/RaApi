@@ -20,7 +20,45 @@ def PlaceTypes(request):
 
 def Positions(request):
     if request.method == 'GET':
-        positions = Position.objects.all()
+        typeplace = ''
+        try:
+            typeplace = request.GET['type']
+        except:
+            typeplace = 0
+        print typeplace 
+        if typeplace == 0:
+            positions = Position.objects.all()
+            response = render_to_response(
+            'positions.json',
+            {'positions': positions},
+            context_instance=RequestContext(request)
+            )
+            response['Content-Type'] = 'application/json; charset=utf-8'
+            response['Cache-Control'] = 'no-cache'
+            return response
+        else :
+            try :
+                pk = int(typeplace)
+                print pk
+                print typeplace
+            except:
+                pk = 0
+            positions = Position.objects.filter(place__pk=pk)
+            response = render_to_response(
+            'positions.json',
+            {'positions': positions},
+            context_instance=RequestContext(request)
+            )
+            response['Content-Type'] = 'application/json; charset=utf-8'
+            response['Cache-Control'] = 'no-cache'
+            return response
+    elif request.method == 'POST':
+        typeplace = ''
+        try:
+            typeplace = request.POST['type']
+        except:
+            return HttpResponseNotFound()
+        positions = Position.objects.filter(place__pk=pk)
         response = render_to_response(
         'positions.json',
         {'positions': positions},
@@ -29,11 +67,13 @@ def Positions(request):
         response['Content-Type'] = 'application/json; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
         return response
+   
+      
 
-    elif request.method == 'POST': 
-        pass 
-        
 
-     
+
+         
+
+       
 
 
