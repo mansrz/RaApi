@@ -18,6 +18,22 @@ def PlaceTypes(request):
         response['Cache-Control'] = 'no-cache'
         return response
 
+def Positions(request):
+    if request.method == 'GET':
+        positions = Position.objects.all()
+        response = render_to_response(
+        'positions.json',
+        {'positions': positions},
+        context_instance=RequestContext(request)
+        )
+        response['Content-Type'] = 'application/json; charset=utf-8'
+        response['Cache-Control'] = 'no-cache'
+        return response
 
+    elif request.method == 'POST': 
+        pass 
+        
+
+     
 
 

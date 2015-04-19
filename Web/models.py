@@ -11,6 +11,6 @@ class PlaceType(models.Model):
 
 class Position(models.Model):
     name = models.CharField(max_length=64)
-    latitude = models.DecimalField(max_digits = 10, decimal_places = 5)  
-    longitude = models.DecimalField(max_digits = 10, decimal_places = 5)
+    latitude = models.CharField(max_length=64)
+    longitude = models.CharField(max_length=64)
     place = models.ForeignKey(PlaceType, related_name = "Place")
