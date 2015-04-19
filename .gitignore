@@ -1,0 +1,7 @@
+*.pyc
+backup-file.sql
+db.sqlite3
+*~
+*.swp
+*.swo
+*.swc
