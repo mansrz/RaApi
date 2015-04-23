@@ -1,3 +1,4 @@
 *.pyc
 *~
 /ApiRa/settings*.py
+db.sqlite3
