@@ -1,11 +1,15 @@
 {% spaceless %}
-[
-{% for place in places %}
-    {
-        "id": "{{ place.id }}",
-        "name": "{{ place.name }}",
-        
-    }{% if not forloop.last %},{% endif %}
-{% endfor %}
-]
+{ "responseData":{
+  "results":
+    [
+    {% for place in places %}
+        {
+            "id": "{{ place.id }}",
+            "name": "{{ place.name }}",
+            
+        }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+    ]
+  }
+}
 {% endspaceless %}

@@ -1,13 +1,17 @@
 {% spaceless %}
-[
-{% for position in positions %}
-    {
-        "streetAddress": "{{ position.name }}",
-        "lat": "{{ position.latitude }}",
-        "lng": "{{ position.longitude }}",
-        "titleNoFormatting": "{{ position.place.name }}",
-        
-    }{% if not forloop.last %},{% endif %}
-{% endfor %}
-]
+{ "responseData":{
+  "results":
+    [
+      {% for position in positions %}
+          {
+              "streetAddress": "{{ position.name }}",
+              "lat": "{{ position.latitude }}",
+              "lng": "{{ position.longitude }}",
+              "titleNoFormatting": "{{ position.place.name }}",
+              
+          }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+}
 {% endspaceless %}
