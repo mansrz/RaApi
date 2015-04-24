@@ -1,0 +1,107 @@
+html, body, #map_canvas {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.canvas { width: 100%; height: 100%; position: absolute; }
+
+#map_canvas {
+    width: 100%;
+    float: left;
+}
+
+a:hover, a:active, a:focus { text-decoration: none; outline: none; }
+
+#proyectos { 
+    width: 20%; 
+    float: left; 
+    position: absolute; 
+    right: 0; 
+    bottom: 20px; 
+    z-index: 1000; 
+}
+
+.whitetheme { 
+    color: #eee; 
+    font-weight: bold; 
+}
+
+.whitetheme:hover { 
+    color: white; 
+}
+
+h5 { 
+    margin: 0; 
+}
+
+hr { 
+    margin: 4px 0; 
+}
+
+.smaller { 
+    font-size: 12px;
+    line-height: 12px; 
+    color: #666;
+}
+
+#selectanio{ 
+    position: absolute; 
+    z-index: 1000; 
+    top: 65px; 
+    left: 100px; 
+}
+
+#trimestres { 
+    position: absolute; 
+    z-index: 1000; 
+    top: 0px; 
+    left: 160px; 
+}
+
+#zonas { 
+    position: absolute; 
+    z-index: 1000; 
+    bottom: 20px; 
+    left: 100px; 
+}
+
+fieldset { 
+    margin-bottom: 0; 
+}
+
+.modal-header { 
+    background: green; 
+    color: white; 
+}
+
+#proyectos p {
+    font-size: 40px;
+    font-weight: bold;
+    color: #428BCA;
+    text-decoration: underline;
+}
+
+#proyectos a {
+    font-weight: bold;
+    text-decoration: line-through;
+}
+
+#proyectos a.visible {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#proyectos span.mostrar-sector{
+    color: #428BCA;
+    cursor: pointer;
+}
+
+#proyectos h4 {
+    color: #008000;
+}
+
+#carousel-galeria {
+    height: 1000;
+    width: 1000;
+}
