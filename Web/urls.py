@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     url(r'^places/', 'Web.views.PlaceTypes', name='types'),
     url(r'^positions', 'Web.views.Positions', name='positions'),
+    url(r'^map','Web.views.Map', name='map'),
 
 )

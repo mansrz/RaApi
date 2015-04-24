@@ -70,7 +70,13 @@ def Positions(request):
    
       
 
-
+def Map(request):
+    template = 'index.html'
+    if request.method == 'GET':
+        context = {}
+        return render(request, template, context)
+        
+    
 
          
 

@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+{% load staticfiles %}
 <html  xml:lang="es">
 <head>
 <title>Obtener coordenadas de google maps</title>
@@ -6,10 +7,10 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta name="Description" content="obtener coordenadas de google maps de un punto, buscas la dirección y pinchas sobre el mapa para obtener o conseguir las coordenadas"  />
 
-        <link href="static/css/styles.css" rel="stylesheet" media="screen">
-        <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="{% static '/css/styles.css' %}" rel="stylesheet" media="screen">
+<link href="{% static '/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
 
-        <script src="static/js/bootstrap.min.js"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
         <style>
             html, body, #map-canvas {
                 height: 100%;
@@ -24,7 +25,7 @@
 		padding-top: 3px;
 	}
 </style>
-<script type="text/javascript" src="static/js/jquery.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 <script type="text/javascript">
 	//Declaramos las variables que vamos a user
 	var lat = null;
@@ -174,7 +175,7 @@
 
 
 		<div>
-		<img id="logo" width="80px" height="100px" style="float: centre;" src="static/img/kokoa.png" alt="kokologo"/>
+      <img id="logo" width="80px" height="100px" style="float: centre;" src="{% static 'img/kokoa.png'%}" alt="kokologo"/>
 		</div>	
 
 		<!-- div donde se dibuja el mapa-->
