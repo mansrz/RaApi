@@ -3,11 +3,14 @@ from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 import json
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseForbidden
+
 
 from models import PlaceType, Position
 # Create your views here.
 
-def PlaceTypes(request):
+def placeTypes(request):
     if request.method == 'GET':
         places = PlaceType.objects.all()
         response = render_to_response(
@@ -19,7 +22,7 @@ def PlaceTypes(request):
         response['Cache-Control'] = 'no-cache'
         return response
 
-def Positions(request):
+def positions(request):
     if request.method == 'GET':
         typeplace = ''
         try:
@@ -40,8 +43,6 @@ def Positions(request):
         else :
             try :
                 pk = int(typeplace)
-                print pk
-                print typeplace
             except:
                 pk = 0
             positions = Position.objects.filter(place__pk=pk)
@@ -54,38 +55,32 @@ def Positions(request):
             response['Cache-Control'] = 'no-cache'
             return response
     elif request.method == 'POST':
-        typeplace = ''
-        try:
-            typeplace = request.POST['type']
-        except:
-            return HttpResponseNotFound()
-        positions = Position.objects.filter(place__pk=pk)
-        response = render_to_response(
-        'positions.json',
-        {'positions': positions},
-        context_instance=RequestContext(request)
-        )
-        response['Content-Type'] = 'application/json; charset=utf-8'
-        response['Cache-Control'] = 'no-cache'
-        return response
-   
+        pass  
       
 
-def Map(request):
+def map(request):
     template = 'index.html'
     if request.method == 'GET':
         context = {}
         return render(request, template, context)
-       
-    
+
+def home(request):
+    usuario=request.user
+    template = 'login.html'
+    if usuario.is_authenticated():
+        return redirect('/map')
+    else:
+        return render(request, template, {})
+
+
 @never_cache
 def login(request):
     #if not request.is_ajax() or request.method != 'GET':
     #    return
-
     try:
         username = request.GET['username']
         password = request.GET['password']
+        print password 
     except:
         return HttpResponseBadRequest('Bad parameters')
 
@@ -102,13 +97,11 @@ def login(request):
 
             response_content = {
                 'username': user.username,
-                'email': user.email,
-                'avatar': user.profile.avatar
             }
             response =  HttpResponse(json.dumps(response_content))
             response['Content-Type'] = 'application/json; charset=utf-8'
             response['Cache-Control'] = 'no-cache'
-            return response
+            return redirect('/map')
         else:
             # Return a 'disabled account' error message
             return HttpResponseBadRequest('User have been suspended')
@@ -117,6 +110,11 @@ def login(request):
         return HttpResponseBadRequest('User and password are incorrect')
 
          
+@never_cache
+def logout(request):
+    from django.contrib.auth import logout
+    logout(request)
+    return redirect('/')
 
        
 
