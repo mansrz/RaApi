@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
-
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
       function initialize() {
         var mapOptions = {
@@ -80,6 +80,10 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+    <div style="position:absolute; margin-left:10px;" z-index="999999">
+      <span class="fa fa-power off" stlye="font-size:3em;"></span>
+    </div>
+
     <div id="map-canvas" z-index="9999"></div>
     <script>
        $(document).ready(function(){
@@ -107,11 +111,11 @@
                     csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
                     });
                 posting.done(function(){
-                      swal("Buen Trabajo!", "¡Posicion Guardada!", "success")
+                      swal("¡Buen Trabajo!", "Posicion Guardada", "success")
                       $("#modal").modal('hide');
                    });
                 posting.fail(function(){
-                      swal("):", "¡Algo sucedió mal!", "error")
+                      swal("):", "¡Algo sucedió! Revisa los datos ", "error")
                    });
                 }
              );
