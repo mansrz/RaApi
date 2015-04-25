@@ -5,7 +5,7 @@
     {% for place in places %}
         {
             "id": "{{ place.id }}",
-            "name": "{{ place.name }}",
+            "name": "{{ place.name }}"
             
         }{% if not forloop.last %},{% endif %}
     {% endfor %}

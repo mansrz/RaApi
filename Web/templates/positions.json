@@ -7,7 +7,7 @@
               "streetAddress": "{{ position.name }}",
               "lat": "{{ position.latitude }}",
               "lng": "{{ position.longitude }}",
-              "titleNoFormatting": "{{ position.place.name }}",
+              "titleNoFormatting": "{{ position.place.name }}"
               
           }{% if not forloop.last %},{% endif %}
       {% endfor %}

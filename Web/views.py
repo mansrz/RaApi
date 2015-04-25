@@ -55,8 +55,34 @@ def positions(request):
             response['Cache-Control'] = 'no-cache'
             return response
     elif request.method == 'POST':
-        pass  
-      
+        try:
+            user = request.user
+        except:
+            return HttpResponseBadRequest()
+        if user.is_authenticated():
+            try:
+                name = request.POST['name']
+                lat = request.POST['lat']
+                lon = request.POST['lon']
+                place = request.POST['place']
+            except:
+                return HttpResponseBadRequest()
+            if len(name) <2:
+                return HttpResponseBadRequest()
+            try:
+                type_place = PlaceType.objects.get(pk=place)
+            except:
+                return HttpResponseBadRequest
+            new_position = Position(name= name,latitude=lat,longitude=lon,place=type_place)
+            new_position.save()
+            response_content = {'status':'ok' }
+            response =  HttpResponse(json.dumps(response_content))
+            response['Content-Type'] = 'application/json; charset=utf-8'
+            response['Cache-Control'] = 'no-cache'
+            return response
+
+
+
 
 def map(request):
     template = 'index.html'
@@ -107,7 +133,7 @@ def login(request):
             return HttpResponseBadRequest('User have been suspended')
     else:
         # Return an 'invalid login' error message.
-        return HttpResponseBadRequest('User and password are incorrect')
+        return redirect('/')
 
          
 @never_cache
