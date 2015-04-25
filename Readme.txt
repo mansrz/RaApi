@@ -15,6 +15,14 @@ urls :
   /admin/
   /places/
   /position
+  /map
+  /
+
+  /:
+    Login
+
+  Map:
+    Template with google maps api, can select point to save a position. (Only visible for user authenticated)
 
   Places: 
     Get a list of places 
@@ -22,3 +30,4 @@ urls :
   Position:
     Get a list of positions
     Send parameter (?type=N) in GET method, filter for place 
+    Post a position
