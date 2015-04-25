@@ -15,11 +15,13 @@
     <script src="{% static 'js/sweetalert-dev.js' %}"></script>
     <link type="text/css" rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
+
       function initialize() {
         var mapOptions = {
             zoom: 17,
@@ -32,27 +34,103 @@
         google.maps.event.addListener(map, 'dblclick', function(e) {
             placeMarker(e.latLng, map);
             });
-      }
 
+      
+        $.ajax(
+            {
+              type:"GET",
+              url:"/positions",
+              async: true,
+              dataType:"Json",
+              contenType:"application/Json; charset=utf-8",
+              success: function(data){
+                $(data.responseData.results).each( function () {
+                  var marker = new google.maps.Marker({
+                          position:   new google.maps.LatLng(this.lat,this.lng),
+                          map: map,
+                          title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
+                       }
+                    );  
+                  attachSecretMessage(marker);                  
+                  });
+              },
+            });
+      }
+      
       function placeMarker(position, map) {
-        var marker = new google.maps.Marker({
-          position: position,
-          map: map
-      });
+        map.panTo(position);
         console.log(position);
         console.log(position.D);
         console.log(position.k);
         swal({   title: "¡Escogiste un punto!",   text: "Escoge estas coordenadas para asignarlas un tipo de lugar.",   type: "warning",   showCancelButton: true,   confirmButtonColor: "#A5DC86",   confirmButtonText: "Guardar el punto",   closeOnConfirm: true },
            function(){
-               $('input[name="lat"]').val(position.D);
-               $('input[name="long"]').val(position.k);
-
-               $('#modal').modal('show');
-            });       
-        map.panTo(position);
+        
+             $('input[name="lat"]').val(position.D);
+             $('input[name="long"]').val(position.k);
+             $('input[name="name"]').val('');
+             $('#modal').modal('show');
+             $('#modal').on('hide.bs.modal',function(){
+               if( $('input[name="name"]').val().length >2){
+                  var marker = new google.maps.Marker({
+                      position: position,
+                      map: map,
+                      title : $('input[name="name"]').val() + '<br/>' + $('#cbo_type option:selected').text() +'<br/>Lat: '+$('input[name="lat"]').val() +' Long:'+$('input[name="long"]').val()
+                  });
+                  attachSecretMessage(marker);
+               }
+       
+             });
+                      
+          });       
       }
+      function attachSecretMessage(marker) {
+        var infowindow = new google.maps.InfoWindow({
+                  content: marker.title
+        });
 
+        google.maps.event.addListener(marker, 'click', function() {
+                infowindow.open(marker.get('map'), marker);
+        });
+      }
       google.maps.event.addDomListener(window, 'load', initialize);
+
+      $(document).ready(function(saved){
+              $.ajax(
+                {
+                  type:"GET",
+                  url:"places/",
+                  async: true,
+                  dataType:"Json",
+                  contenType:"application/Json; charset=utf-8",
+                  success: function(data){
+                    var $subType = $("#cbo_type");
+                    $subType.empty();
+                    $(data.responseData.results).each( function () {
+                      $subType.append($('<option></option>').attr("value", this.id).text(this.name));
+                     });
+                  },
+                });
+              $("#modal").modal({}).draggable();
+              $("#modal").modal('hide');
+              $("#save").click(function(){
+                posting= $.post("/positions",{
+                    name: $('input[name="name"]').val(),
+                    lon: $('input[name="lat"]').val(),
+                    lat: $('input[name="long"]').val(),
+                    place: $('#cbo_type option:selected').val(),
+                    csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
+                    });
+                posting.done(function(){
+                      swal("¡Buen Trabajo!", "Posicion Guardada", "success")
+                      $("#modal").modal('hide');
+                });
+                posting.fail(function(){
+                      swal("):", "¡Algo sucedió! Revisa los datos ", "error")
+                      saved= false;
+                });
+             });
+        });
+
 
     </script>
   </head>
@@ -86,41 +164,6 @@
 
     <div id="map-canvas" z-index="9999"></div>
     <script>
-       $(document).ready(function(){
-              $.ajax(
-                {
-                  type:"GET",
-                  url:"places/",
-                  async: true,
-                  dataType:"Json",
-                  contenType:"application/Json; charset=utf-8",
-                  success: function(data){
-                    var $subType = $("#cbo_type");
-                    $subType.empty();
-                    $(data.responseData.results).each( function () {
-                      $subType.append($('<option></option>').attr("value", this.id).text(this.name));
-                     });
-                  },
-                });
-              $("#save").click(function(){
-                posting= $.post("/positions",{
-                    name: $('input[name="name"]').val(),
-                    lon: $('input[name="lat"]').val(),
-                    lat: $('input[name="long"]').val(),
-                    place: $('#cbo_type option:selected').val(),
-                    csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
-                    });
-                posting.done(function(){
-                      swal("¡Buen Trabajo!", "Posicion Guardada", "success")
-                      $("#modal").modal('hide');
-                   });
-                posting.fail(function(){
-                      swal("):", "¡Algo sucedió! Revisa los datos ", "error")
-                   });
-                }
-             );
-        });
-
-    </script>
+     </script>
   </body>
 </html>
