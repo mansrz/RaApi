@@ -134,7 +134,7 @@ def login(request):
             return redirect('/map')
         else:
             # Return a 'disabled account' error message
-            return HttpResponseBadRequest('User have been suspended')
+            return render(request, 'login.html', {'error':'Usuario deshabilitado' })
     else:
         # Return an 'invalid login' error message.
          return render(request, 'login.html', {'error':'Credenciales no encontradas' })
