@@ -11,6 +11,33 @@
         margin: 0px;
         padding: 0px
       }
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -80px;
+        z-index: 5;
+        background-color: #fff;
+        opacity: 0.9;
+        padding: 5px;        
+        cursor: pointer; 
+      }
+     #lateral {
+        position: absolute;
+        top: 40px;
+        width: 170px;
+        height: 200px;
+        left: 20px;
+        z-index: 5;
+        background-color: #494949;
+        opacity: 0.9;
+        padding: 20px;        
+      }
+      .title{
+        font-size: 14pt;
+        color : #fff;
+
+      }
     </style>
     <script src="{% static 'js/sweetalert-dev.js' %}"></script>
     <link type="text/css" rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
@@ -21,14 +48,15 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
-
+      var maps;
+      var markers=[];
       function initialize() {
         var mapOptions = {
             zoom: 17,
 
             center: new google.maps.LatLng(-2.14700, -79.96476)
         };
-        var map = new google.maps.Map(document.getElementById('map-canvas'),
+        map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
 
         google.maps.event.addListener(map, 'dblclick', function(e) {
@@ -51,12 +79,85 @@
                           title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
                        }
                     );  
+                  markers.push(marker);
                   attachSecretMessage(marker);                  
                   });
               },
             });
+        $('#cbo_type_filter').on('change',function(){
+                var filter=$("#cbo_type_filter option:selected").text();
+                AddPoints(map,filter);
+            });
+
       }
-      
+
+      function EqualsMarker(marker, marker_){
+
+        if(marker.position.D== marker_.position.D  && marker.position.k == marker_.position.k){
+           return true;
+        } 
+        return false;
+      }
+      function AddPoints(map,filter){
+        $.ajax(
+            {
+              type:"GET",
+              url:"/positions",
+              async: true,
+              dataType:"Json",
+              contenType:"application/Json; charset=utf-8",
+              success: function(data){
+                $(data.responseData.results).each( function () {
+                  var found = false;
+                  
+                  if(filter=="Todos"){
+                      var marker = new google.maps.Marker({
+                            position:   new google.maps.LatLng(this.lat,this.lng),
+                            title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
+                         }
+                      ); 
+                      for (var i = 0; i < markers.length; i++) {
+                        markers[i].setMap(map);
+                      }       
+                  }else{
+                    if(filter== this.titleNoFormatting){
+                        var marker = new google.maps.Marker({
+                            position:   new google.maps.LatLng(this.lat,this.lng),
+                           title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
+                         }
+                      );  
+                      for (var i = 0; i < markers.length; i++) {
+                         if(EqualsMarker(markers[i],marker))
+                           markers[i].setMap(map);
+                         
+                        } 
+                      }else{
+                         var marker = new google.maps.Marker({
+                            position:   new google.maps.LatLng(this.lat,this.lng),
+                            title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
+                         }
+                        );
+                      for (var i = 0; i < markers.length; i++) {
+                         if(EqualsMarker(markers[i],marker))
+                           markers[i].setMap(null);
+                         
+                        } 
+                      }
+                  }                  
+                 
+                });
+              }
+            } 
+            );
+      }
+      function clearMarkers() {
+        setAllMap(null);
+      }
+      function setAllMap(map) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
       function placeMarker(position, map) {
         map.panTo(position);
         console.log(position);
@@ -76,6 +177,7 @@
                       map: map,
                       title : $('input[name="name"]').val() + '<br/>' + $('#cbo_type option:selected').text() +'<br/>Lat: '+$('input[name="lat"]').val() +' Long:'+$('input[name="long"]').val()
                   });
+                  markers.push(marker);
                   attachSecretMessage(marker);
                }
        
@@ -95,46 +197,67 @@
       google.maps.event.addDomListener(window, 'load', initialize);
 
       $(document).ready(function(saved){
-              $.ajax(
-                {
-                  type:"GET",
-                  url:"places/",
-                  async: true,
-                  dataType:"Json",
-                  contenType:"application/Json; charset=utf-8",
-                  success: function(data){
-                    var $subType = $("#cbo_type");
-                    $subType.empty();
-                    $(data.responseData.results).each( function () {
-                      $subType.append($('<option></option>').attr("value", this.id).text(this.name));
-                     });
-                  },
-                });
-              $("#modal").modal({}).draggable();
-              $("#modal").modal('hide');
-              $("#save").click(function(){
-                posting= $.post("/positions",{
-                    name: $('input[name="name"]').val(),
-                    lon: $('input[name="lat"]').val(),
-                    lat: $('input[name="long"]').val(),
-                    place: $('#cbo_type option:selected').val(),
-                    csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
-                    });
-                posting.done(function(){
-                      swal("¡Buen Trabajo!", "Posicion Guardada", "success")
-                      $("#modal").modal('hide');
-                });
-                posting.fail(function(){
-                      swal("):", "¡Algo sucedió! Revisa los datos ", "error")
-                      saved= false;
-                });
-             });
+        $.ajax(
+          {
+            type:"GET",
+            url:"places/",
+            async: true,
+            dataType:"Json",
+            contenType:"application/Json; charset=utf-8",
+            success: function(data){
+              var $subType = $("#cbo_type");
+              var $subTypeFilter = $("#cbo_type_filter");
+              $subType.empty();
+              $(data.responseData.results).each( function () {
+                $subType.append($('<option></option>').attr("value", this.id).text(this.name));
+                $subTypeFilter.append($('<option></option>').attr("value", this.id).text(this.name));
+               });
+            },
+          });
+        $("#modal").modal({}).draggable();
+        $("#modal").modal('hide');
+        $("#save").click(function(){
+          posting= $.post("/positions",{
+            name: $('input[name="name"]').val(),
+            lon: $('input[name="lat"]').val(),
+            lat: $('input[name="long"]').val(),
+            place: $('#cbo_type option:selected').val(),
+            csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
+          });
+          posting.done(function(){
+            swal("¡Buen Trabajo!", "Posicion Guardada", "success")
+            $("#modal").modal('hide');
+          });
+          posting.fail(function(){
+            swal("):", "¡Algo sucedió! Revisa los datos ", "error")
+            saved= false;
+          });
         });
+        $('#panel').click(function(){
+            $(location).attr('href','/logout');
+        });
+      });
 
 
     </script>
   </head>
   <body>
+    <div id="panel">
+      <span class="fa fa-power-off"></span>      
+      Cerrar Sesi&oacuten
+    </div>
+    <div id="lateral">
+      <div style="">
+        <div class="title">
+          Filtrar por tipo:
+        </div>
+        <div class="form">
+          <select name="tipo_filtro" id="cbo_type_filter">
+            <option value="0">Todos</option>
+          </select>
+        </div>
+      </div>
+    </div>
     <div class="modal fade" id="modal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -158,10 +281,6 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-    <div style="position:absolute; margin-left:10px;" z-index="999999">
-      <span class="fa fa-power off" stlye="font-size:3em;"></span>
-    </div>
-
     <div id="map-canvas" z-index="9999"></div>
     <script>
      </script>
