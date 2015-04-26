@@ -2,7 +2,7 @@
 {% load staticfiles %}
 <html>
   <head>
-    <title>Accessing arguments in UI events</title>
+    <title>::Map:::Map::</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
@@ -19,6 +19,17 @@
         z-index: 5;
         background-color: #fff;
         opacity: 0.9;
+        padding: 5px;        
+        cursor: pointer; 
+      }
+     #logo {
+        position: absolute;
+        top: 85%;
+        left: 53.5%;
+        margin-left: -80px;
+        z-index: 5;
+        background-color: #fff;
+        opacity: 0.2;
         padding: 5px;        
         cursor: pointer; 
       }
@@ -225,12 +236,12 @@
             csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
           });
           posting.done(function(){
-            swal("¡Buen Trabajo!", "Posicion Guardada", "success")
+            swal("¡Buen Trabajo!", "Posicion Guardada", "success");
             $("#modal").modal('hide');
           });
           posting.fail(function(){
-            swal("):", "¡Algo sucedió! Revisa los datos ", "error")
-            saved= false;
+            swal("):", "¡Algo sucedió! Revisa los datos ", "error");
+            
           });
         });
         $('#panel').click(function(){
@@ -242,6 +253,9 @@
     </script>
   </head>
   <body>
+    <div id="logo">
+      <img src="{% static 'img/logo.png' %}" height="70">
+    </div>
     <div id="panel">
       <span class="fa fa-power-off"></span>      
       Cerrar Sesi&oacuten
@@ -252,6 +266,7 @@
           Filtrar por tipo:
         </div>
         <div class="form">
+          <br/>
           <select name="tipo_filtro" id="cbo_type_filter">
             <option value="0">Todos</option>
           </select>

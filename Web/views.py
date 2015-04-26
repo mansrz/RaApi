@@ -137,7 +137,7 @@ def login(request):
             return HttpResponseBadRequest('User have been suspended')
     else:
         # Return an 'invalid login' error message.
-        return redirect('/')
+         return render(request, 'login.html', {'error':'Credenciales no encontradas' })
 
          
 @never_cache

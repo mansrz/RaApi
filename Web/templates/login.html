@@ -9,47 +9,41 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 {% load staticfiles %}
 <html>	
 <head>
-<title>User Login Flat Responsive widget Template :: w3layouts</title>
+<title>:::Login:::</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
-<meta name="keywords" content="User Login Form Responsive Templates, Iphone Widget Template, Smartphone login forms,Login form, Widget Template, Responsive Templates, a Ipad 404 Templates, Flat Responsive Templates" />
+<meta name="keywords" content="Login" />
 <link href="{% static 'css/style.css' %}" rel='stylesheet' type='text/css' />
 <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/sweetalert-dev.js' %}"></script>
+<link type="text/css" rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
 <!--web-fonts-->
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 <!--/web-fonts-->
+{% if error %}
 <script>
- $(document).ready(
-  function(){
-
-   $('input[type="submit"]').click(function(){
-     $.get("/login", 
-       {
-        username: $("input[name='username']").val(),
-        password: $("input[name='password']").val()
-        }).done(function(data){
-            console.log(data);
-           });
-      });
-     }
- );
+  $(document).ready(function(){
+    swal("):", "{{error}}" , "error");
+  });
 </script>
+{% endif %}
+
 </head>
 <body>
 <!--User-Login-->
-<h1>User Login</h1>
+<h1>Iniciar Sesi&oacuten</h1>
 <div class="avtar">
-  <img src="{% static 'images/avtar.png' %}">
+  <img src="{% static 'img/logo.png' %}" height="200" >
 </div>
 	<div class="login-form">
     <form action="/login" method="GET">
-    <div class="form-text">
-      <input type="text" class="text" name="username" value="USERNAME" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'USERNAME';}" >
-      <input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}">
-    </div>
+      <div class="form-text">
+        <input type="text" class="text" name="username" value="Usuario" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Usuario';}" >
+        <input type="password" value="Password" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}">
+      </div>
       <input type="submit" value="GO" >
      </form>
-	</div>
+   </div>
 <!--/User-Login-->
 <!--start-copyright-->
 <div class="copy-right">
