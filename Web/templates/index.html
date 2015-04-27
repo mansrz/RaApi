@@ -6,15 +6,16 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
+      
       html, body, #map-canvas {
         height: 100%;
         margin: 0px;
         padding: 0px
       }
+
       #panel {
         position: absolute;
         bottom: 5px;
-
         left: 53%;
         margin-left: -80px;
         z-index: 5;
@@ -23,6 +24,7 @@
         padding: 5px;        
         cursor: pointer; 
       }
+
      #logo {
         position: absolute;
         top: 0px;
@@ -30,25 +32,26 @@
         margin-left: -75px;
         z-index: 5;
         opacity: 0.2;
-        padding: 5px;        
-        
+        padding: 5px;               
       }
+
      #lateral {
         position: absolute;
         top: 40px;
-        width: 170px;
-        height: 200px;
+        width: 210px;
+        height: 250px;
         right: 5px;
         z-index: 5;
         background-color: #fff;
         opacity: 0.9;
-        padding: 20px;        
+        padding: 10px;        
       }
+
       .title{
         font-size: 14pt;
         color : #494949;
-
       }
+
     </style>
     <script src="{% static 'js/sweetalert-dev.js' %}"></script>
     <link type="text/css" rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
