@@ -13,8 +13,9 @@
       }
       #panel {
         position: absolute;
-        top: 5px;
-        left: 50%;
+        bottom: 5px;
+
+        left: 53%;
         margin-left: -80px;
         z-index: 5;
         background-color: #fff;
@@ -24,20 +25,20 @@
       }
      #logo {
         position: absolute;
-        bottom: 50px;
+        top: 0px;
         left: 53.5%;
         margin-left: -75px;
         z-index: 5;
         opacity: 0.2;
         padding: 5px;        
-        cursor: pointer; 
+        
       }
      #lateral {
         position: absolute;
         top: 40px;
         width: 170px;
         height: 200px;
-        left: 5px;
+        right: 5px;
         z-index: 5;
         background-color: #fff;
         opacity: 0.9;
@@ -55,15 +56,18 @@
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>!-->
+    <script src="http://maps.googleapis.com/maps/api/js"> </script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
       var map;
       var markers=[];
       function initialize() {
         var mapOptions = {
-            zoom: 17,
-
+            zoom: 18,
+            disableDoubleClickZoom: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            
             center: new google.maps.LatLng(-2.14700, -79.96476)
         };
         map = new google.maps.Map(document.getElementById('map-canvas'),
@@ -179,7 +183,16 @@
         console.log(position);
         console.log(position.D);
         console.log(position.k);
-        swal({   title: "¡Escogiste un punto!",   text: "Escoge estas coordenadas para asignarlas un tipo de lugar.",   type: "warning",   showCancelButton: true,   confirmButtonColor: "#A5DC86",   confirmButtonText: "Guardar el punto",   closeOnConfirm: true },
+        swal({ 
+          title: "¡Escogiste un punto!",
+          text: "Escoge estas coordenadas para asignarlas un tipo de lugar.",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#A5DC86",
+          confirmButtonText: "Guardar el punto",
+          closeOnConfirm: true,
+          cancelButtonText: "Cancelar"
+          },
            function(){
         
              $('input[name="lat"]').val(position.D);
@@ -251,7 +264,20 @@
           });
         });
         $('#panel').click(function(){
-            $(location).attr('href','/logout');
+            swal({
+              title: "¿Deseas cerrar sesión?",
+              text: "Para seguir agregando posiciones o viendo el mapa deberás iniciar sesión de nuevo.",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Sí",
+              closeOnConfirm: false ,
+              cancelButtonText: "Cancelar"
+              },
+              function(){
+                swal("Sesión Cerrada", "¡Será un hasta la próxima!", "success"); 
+                setTimeout(function(){$(location).attr('href','/logout')},1200);
+              });
         });
       });
 
