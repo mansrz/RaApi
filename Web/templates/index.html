@@ -24,9 +24,9 @@
       }
      #logo {
         position: absolute;
-        top: 85%;
+        bottom: 50px;
         left: 53.5%;
-        margin-left: -80px;
+        margin-left: -75px;
         z-index: 5;
         opacity: 0.2;
         padding: 5px;        
@@ -58,7 +58,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
-      var maps;
+      var map;
       var markers=[];
       function initialize() {
         var mapOptions = {
@@ -94,12 +94,18 @@
                   });
               },
             });
-        $('#cbo_type_filter').on('change',function(){
+        $('#cbo_type_filter').on('change',
+            function(){
                 var filter=$("#cbo_type_filter option:selected").text();
                 AddPoints(map,filter);
-            });
+            }
+            );
 
       }
+      var filterPoints = function(){
+                var filter=$("#cbo_type_filter option:selected").text();
+                AddPoints(map,filter);
+            }
 
       function EqualsMarker(marker, marker_){
 
@@ -189,6 +195,7 @@
                   });
                   markers.push(marker);
                   attachSecretMessage(marker);
+                  filterPoints();
                }
        
              });
