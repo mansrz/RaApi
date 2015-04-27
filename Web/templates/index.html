@@ -68,18 +68,19 @@
       function initialize() {
         var mapOptions = {
             zoom: 18,
-            disableDoubleClickZoom: true,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
-            
+            {% if admin %}
+            disableDoubleClickZoom: true,
+            {% endif %}
             center: new google.maps.LatLng(-2.14700, -79.96476)
         };
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
-
+        {% if admin %}
         google.maps.event.addListener(map, 'dblclick', function(e) {
             placeMarker(e.latLng, map);
             });
-
+        {% endif %}
       
         $.ajax(
             {
@@ -181,6 +182,7 @@
           markers[i].setMap(map);
         }
       }
+      {% if admin %}
       function placeMarker(position, map) {
         map.panTo(position);
         console.log(position);
@@ -218,6 +220,7 @@
                       
           });       
       }
+      {% endif %}
       function attachSecretMessage(marker) {
         var infowindow = new google.maps.InfoWindow({
                   content: marker.title
@@ -247,6 +250,7 @@
                });
             },
           });
+        {% if admin %}
         $("#modal").modal({}).draggable();
         $("#modal").modal('hide');
         $("#save").click(function(){
@@ -282,6 +286,7 @@
                 setTimeout(function(){$(location).attr('href','/logout')},1200);
               });
         });
+        {% endif %}
       });
 
 
@@ -291,10 +296,12 @@
     <div id="logo">
       <img src="{% static 'img/logo.png' %}" height="70">
     </div>
+    {% if admin %}
     <div id="panel">
       <span class="fa fa-power-off"></span>      
       Cerrar Sesi&oacuten
     </div>
+    {% endif %}
     <div id="lateral">
       <div style="">
         <div class="title">
@@ -308,6 +315,7 @@
         </div>
       </div>
     </div>
+    {% if admin %}
     <div class="modal fade" id="modal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -331,8 +339,7 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+    {% endif %}
     <div id="map-canvas" z-index="9999"></div>
-    <script>
-     </script>
   </body>
 </html>

@@ -78,13 +78,13 @@ def positions(request):
 
 def map(request):
     user = request.user
+    template = 'index.html'
     if user.is_authenticated():
-        template = 'index.html'
         if request.method == 'GET':
-            context = {}
+            context = {'admin':'true'}
             return render(request, template, context)
     else:
-        return redirect('/')
+        return render(request, template, {})
 
 def home(request):
     usuario=request.user
