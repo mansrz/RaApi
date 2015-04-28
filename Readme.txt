@@ -22,7 +22,8 @@ urls :
     Login
 
   Map:
-    Template with google maps api, can select point to save a position. (Only visible for user authenticated)
+    Template with google maps api, can select point to save a position and filter. (Only visible for user authenticated)
+    Template with google maps api for user not authenticated can filter positions and see path from actual direction
 
   Places: 
     Get a list of places 
