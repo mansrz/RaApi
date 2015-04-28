@@ -48,7 +48,6 @@
       }
 
       .title{
-        font-size: 14pt;
         color : #494949;
       }
 
@@ -63,9 +62,13 @@
     <script src="http://maps.googleapis.com/maps/api/js"> </script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
+      var directionsDisplay;
+      var directionsService = new google.maps.DirectionsService();
       var map;
+      var position_actual,position_final; 
       var markers=[];
       function initialize() {
+        directionsDisplay  = new google.maps.DirectionsRenderer();
         var mapOptions = {
             zoom: 18,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -76,12 +79,47 @@
         };
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
-        {% if admin %}
-        google.maps.event.addListener(map, 'dblclick', function(e) {
+       {% if admin %}
+         google.maps.event.addListener(map, 'dblclick', function(e) {
             placeMarker(e.latLng, map);
             });
+       {% endif %}
+       {% if not admin %}
+
+        google.maps.event.addListener(map, 'click', function(e) {
+       var marker = new google.maps.Marker({
+          position:   new google.maps.LatLng(e.latLng.D,e.latLng.k),
+          map: map
+          }
+        );
+       
+         position_final= marker; 
+       });
         {% endif %}
-      
+        {% if not admin %}
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = new google.maps.LatLng(position.coords.latitude,
+              position.coords.longitude);
+
+            var infowindow = new google.maps.InfoWindow({
+              map: map,
+              position: pos,
+              content: 'Tu est&aacutes aqu&iacute'
+            });
+
+            map.setCenter(pos);
+            position_actual= pos; 
+            }, function() {
+               swal("Éxito", "¡Encontramos tu ubicación!", "success"); 
+
+            });
+        } else {
+          // Browser doesn't support Geolocation
+               swal("):", "No podimos encontrar tu ubcicación ", "success"); 
+        }
+        directionsDisplay.setMap(map);
+        {% endif %}
         $.ajax(
             {
               type:"GET",
@@ -110,6 +148,10 @@
             );
 
       }
+
+      {% if not admin %}
+        //SCRIPTS FOR USERS NOT LOGIN
+      {% endif %}
       var filterPoints = function(){
                 var filter=$("#cbo_type_filter option:selected").text();
                 AddPoints(map,filter);
@@ -122,6 +164,7 @@
         } 
         return false;
       }
+
       function AddPoints(map,filter){
         $.ajax(
             {
@@ -185,9 +228,6 @@
       {% if admin %}
       function placeMarker(position, map) {
         map.panTo(position);
-        console.log(position);
-        console.log(position.D);
-        console.log(position.k);
         swal({ 
           title: "¡Escogiste un punto!",
           text: "Escoge estas coordenadas para asignarlas un tipo de lugar.",
@@ -220,6 +260,25 @@
                       
           });       
       }
+      {% else %}
+      function calcRoute() {
+        if (position_actual == null || position_final == null) {
+          swal("oops!","Debes escoger un punto a donde ir o no se ha podido encontrar tu ubicación ", "error");
+          return 
+        }
+        var mode = $('#mode option:selected').val();
+
+        var request = {
+           origin:position_actual,
+           destination:position_final,
+           travelMode: google.maps.TravelMode[mode]
+        };
+        directionsService.route(request, function(response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(response);
+            }
+            });
+      }
       {% endif %}
       function attachSecretMessage(marker) {
         var infowindow = new google.maps.InfoWindow({
@@ -228,6 +287,8 @@
 
         google.maps.event.addListener(marker, 'click', function() {
                 infowindow.open(marker.get('map'), marker);
+                position_final=marker.position;
+                            
         });
       }
       google.maps.event.addDomListener(window, 'load', initialize);
@@ -286,6 +347,11 @@
                 setTimeout(function(){$(location).attr('href','/logout')},1200);
               });
         });
+        {% else %}
+        swal("Muestra el camino", "Escoge un punto, da click en muestrame el camino y te mostrará un viable. No olvides permitir que el navegador envie tu posición.","info");
+        $('#panel').click(function(){
+              calcRoute(); 
+            });
         {% endif %}
       });
 
@@ -296,23 +362,35 @@
     <div id="logo">
       <img src="{% static 'img/logo.png' %}" height="70">
     </div>
-    {% if admin %}
     <div id="panel">
-      <span class="fa fa-power-off"></span>      
+    {% if admin %}
+      <span class="fa fa-power-off"></span>     
       Cerrar Sesi&oacuten
-    </div>
+    {% else %}
+      <i class="fa fa-map-marker"></i>
+      Mu&eacutestrame el camino 
     {% endif %}
+    </div>
     <div id="lateral">
       <div style="">
         <div class="title">
-          Filtrar por tipo:
+        <b>Filtrar por tipo:</b>
         </div>
         <div class="form">
-          <br/>
           <select name="tipo_filtro" id="cbo_type_filter">
             <option value="0">Todos</option>
           </select>
         </div>
+        {% if not admin %}
+        <br>        
+        <b>Modo de transporte: </b>
+        <select id="mode">
+          <option value="DRIVING">Conduciendo</option>
+          <option value="WALKING">Caminando</option>
+          <option value="BICYCLING">Bicicleta</option>
+          <option value="TRANSIT">Transitando</option>
+        </select>
+        {% endif %}
       </div>
     </div>
     {% if admin %}
