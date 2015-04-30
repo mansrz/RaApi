@@ -120,9 +120,7 @@
         );       
          position_final= marker; 
        });
-        {% endif %}
-        {% if not admin %}
-        if(navigator.geolocation) {
+       if(navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             var pos = new google.maps.LatLng(position.coords.latitude,
               position.coords.longitude);
@@ -174,17 +172,13 @@
 
       }
 
-      {% if not admin %}
-        //SCRIPTS FOR USERS NOT LOGIN
-      {% endif %}
       var filterPoints = function(){
                 var filter=$("#cbo_type_filter option:selected").text();
                 AddPoints(map,filter);
             }
 
       function EqualsMarker(marker, marker_){
-
-        if(marker.position.D== marker_.position.D  && marker.position.k == marker_.position.k){
+        if(marker.position.A== marker_.position.A  && marker.position.F == marker_.position.F){
            return true;
         } 
         return false;
@@ -201,42 +195,37 @@
               success: function(data){
                 $(data.responseData.results).each( function () {
                   var found = false;
-                  
                   if(filter=="Todos"){
                       var marker = new google.maps.Marker({
                             position:   new google.maps.LatLng(this.lat,this.lng),
-                            title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
-                         }
+                          }
                       ); 
                       for (var i = 0; i < markers.length; i++) {
                         markers[i].setMap(map);
                       }       
                   }else{
-                    if(filter== this.titleNoFormatting){
-                        var marker = new google.maps.Marker({
+                    if(filter == this.titleNoFormatting){
+                      var marker = new google.maps.Marker({
                             position:   new google.maps.LatLng(this.lat,this.lng),
-                           title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
-                         }
+                        }
                       );  
                       for (var i = 0; i < markers.length; i++) {
-                         if(EqualsMarker(markers[i],marker))
-                           markers[i].setMap(map);
-                         
-                        } 
-                      }else{
-                         var marker = new google.maps.Marker({
-                            position:   new google.maps.LatLng(this.lat,this.lng),
-                            title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
-                         }
-                        );
+                        if(EqualsMarker(markers[i],marker))
+                        {
+                          markers[i].setMap(map);                         
+                        }
+                      } 
+                    }else{
+                      var marker = new google.maps.Marker({
+                          position:   new google.maps.LatLng(this.lat,this.lng),
+                        }
+                      );
                       for (var i = 0; i < markers.length; i++) {
-                         if(EqualsMarker(markers[i],marker))
-                           markers[i].setMap(null);
-                         
-                        } 
-                      }
+                        if(EqualsMarker(markers[i],marker))
+                         markers[i].setMap(null);
+                      } 
+                    }
                   }                  
-                 
                 });
               }
             } 
@@ -384,7 +373,7 @@
               });
         });
         {% else %}
-        swal("Muestra el camino", "Escoge un punto, da click en muestrame el camino y te mostrará un viable. No olvides permitir que el navegador envie tu posición.","info");
+        swal("Muestra el camino", "Escoge un punto, da click en muestrame el camino y te mostrará uno viable. No olvides permitir que el navegador envie tu posición.","info");
         $('#panel').click(function(){
               calcRoute(); 
             });
