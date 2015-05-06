@@ -114,8 +114,7 @@
 
         google.maps.event.addListener(map, 'click', function(e) {
          var marker = new google.maps.Marker({
-            position:   new google.maps.LatLng(e.latLng.j,e.latLng.C),
-            map: map
+            position:   new google.maps.LatLng(e.latLng.lat(),e.latLng.lng()),
           }
         );       
          position_final= marker; 
@@ -178,7 +177,7 @@
             }
 
       function EqualsMarker(marker, marker_){
-        if(marker.position.j == marker_.position.j  && marker.position.C == marker_.position.C){
+        if(marker.position.lat() == marker_.position.lat()  && marker.position.lng() == marker_.position.lng()){
            return true;
         } 
         return false;
@@ -254,10 +253,10 @@
           },
            function(){
              console.log(position);
-             console.log(position.lat);
-             console.log(position.lng);
-             $('input[name="lat"]').val(position.j);
-             $('input[name="long"]').val(position.C);
+             console.log(position.lat());
+           console.log(position.lng());
+             $('input[name="lat"]').val(position.lat());
+             $('input[name="long"]').val(position.lng());
              $('input[name="name"]').val('');
              $('#modal').modal('show');
              $('#modal').on('hide.bs.modal',function(){
