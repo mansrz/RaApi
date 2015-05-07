@@ -97,7 +97,6 @@ def login(request):
     try:
         username = request.GET['username']
         password = request.GET['password']
-        print password 
     except:
         return HttpResponseBadRequest('Bad parameters')
 
@@ -155,7 +154,6 @@ def search(request):
         term = ' '.join(terms)
 
         positions = Position.objects.filter(Q(name__contains=term.lower()))
-        print term.lower()
         response = render_to_response(
         'positions.json',
         {'positions': positions},
