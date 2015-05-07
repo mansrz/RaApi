@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     url(r'^map','Web.views.map', name='map'),
     url(r'^login','Web.views.login', name ='login'),
     url(r'^logout','Web.views.logout', name ='logout'),
+    url(r'^search','Web.views.search', name ='search'),
 
 )

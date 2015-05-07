@@ -57,14 +57,11 @@ def positions(request):
                 lat = request.POST['lat']
                 lon = request.POST['lon']
                 place = request.POST['place']
+                type_place = PlaceType.objects.get(pk=place)
             except:
                 return HttpResponseBadRequest()
             if len(name) <2:
                 return HttpResponseBadRequest()
-            try:
-                type_place = PlaceType.objects.get(pk=place)
-            except:
-                return HttpResponseBadRequest
             new_position = Position(name= name,latitude=lat,longitude=lon,place=type_place)
             new_position.save()
             response_content = {'status':'ok' }
@@ -72,8 +69,6 @@ def positions(request):
             response['Content-Type'] = 'application/json; charset=utf-8'
             response['Cache-Control'] = 'no-cache'
             return response
-
-
 
 
 def map(request):
@@ -139,5 +134,34 @@ def logout(request):
     return redirect('/')
 
        
+def search(request):
+    if request.method == 'GET':
+        term = request.GET.get('term')
+        if not term:
+            return redirect('/')
 
+        from django.db.models import Q
+        from itertools import chain
+        import re
 
+        # Remove leading and trailing whitespaces
+        # Make every number of whitespaces in row a single space
+        term = re.sub(r'\s+', ' ', term.strip())
+
+        # Discard spanish's articles and prepositions
+        es = ['el', 'la', 'lo', 'los', 'las', 'al', 'al', 'del', 'a', 'de', 'en']
+        terms = term.split(' ')
+        terms = [term for term in terms if term not in es]
+        term = ' '.join(terms)
+
+        positions = Position.objects.filter(Q(name__contains=term.lower()))
+        print term.lower()
+        response = render_to_response(
+        'positions.json',
+        {'positions': positions},
+        context_instance=RequestContext(request)
+        )
+        response['Content-Type'] = 'application/json; charset=utf-8'
+        response['Cache-Control'] = 'no-cache'
+        return response
+  
