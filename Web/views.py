@@ -95,8 +95,8 @@ def login(request):
     #if not request.is_ajax() or request.method != 'GET':
     #    return
     try:
-        username = request.GET['username']
-        password = request.GET['password']
+        username = request.POST['username']
+        password = request.POST['password']
     except:
         return HttpResponseBadRequest('Bad parameters')
 
@@ -106,10 +106,6 @@ def login(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-
-            # End session when the browser is closed. Otherwise use default cookie age
-            if not request.GET.get('remember-me', None):
-                request.session.set_expiry(0)
 
             response_content = {
                 'username': user.username,
