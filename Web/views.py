@@ -5,10 +5,42 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseForbidden
+from suds.xsd.doctor import ImportDoctor, Import
+from suds.client import Client
 
 
 from models import PlaceType, Position
 # Create your views here.
+
+def verifyUser(request):
+
+    try:
+        user = request.GET['user'].strip()
+        pwd = request.GET['pwd'].strip()
+    except:
+        return HttpResponseBadRequest('Error parametros')
+    from django.contrib.auth import authenticate
+    auth = authenticate(username = user , password = pwd)
+    if auth is not None:
+       return HttpResponse(auth.pk,status=202)
+    else:
+
+        url = 'http://ws.espol.edu.ec/saac/wsandroid.asmx?WSDL'
+        imp = Import('http://www.w3.org/2001/XMLSchema')
+        imp.filter.add('http://tempuri.org/')
+        doctor = ImportDoctor(imp)
+        client = Client(url, doctor=doctor)
+        auth = client.service.autenticacion(user,pwd)
+
+        if auth == True:
+            auth = User.objects.create_user(username=user, password=pwd)
+            auth.save()
+            auth = authenticate(username = user , password = pwd)
+            return HttpResponse(auth.pk,status=202)
+        else:
+            return HttpResponseForbidden('Autenticacion Fallida')
+
+
 
 def placeTypes(request):
     if request.method == 'GET':
