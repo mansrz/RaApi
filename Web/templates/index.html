@@ -103,7 +103,11 @@
             {% if admin %}
             disableDoubleClickZoom: true,
             {% endif %}
+            {% if lat and lng %}
+            center: new google.maps.LatLng({{lat}}, {{lng}})
+            {% else %}
             center: new google.maps.LatLng(-2.14700, -79.96476)
+            {% endif %}
         };
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
@@ -121,6 +125,7 @@
         );       
          position_final= marker; 
        });
+       {% if not lat and lng %}
        if(navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             var pos = new google.maps.LatLng(position.coords.latitude,
@@ -142,6 +147,8 @@
           // Browser doesn't support Geolocation
                swal("):", "No podimos encontrar tu ubcicación ", "success"); 
         }
+       {% endif %}
+
         directionsDisplay.setMap(map);
         {% endif %}
         $.ajax(

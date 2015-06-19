@@ -1,4 +1,13 @@
 *.pyc
-*~
 /ApiRa/settings*.py
+/ApiRa/wsgi*.py
+/carga
+/media
+/env
+/static
+.deploy.sh
+backup-file.sql
 db.sqlite3
+users
+*~
+.idea/*

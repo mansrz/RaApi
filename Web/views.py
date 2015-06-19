@@ -43,12 +43,14 @@ def verifyUser(request):
 
 
 def placeTypes(request):
+    print request
     if request.method == 'GET':
         places = PlaceType.objects.all()
+        print places
         response = render_to_response(
-        'places.json',
-        {'places': places},
-        context_instance=RequestContext(request)
+            'places.json',
+            {'places': places},
+            context_instance=RequestContext(request)
         )
         response['Content-Type'] = 'application/json; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
@@ -106,11 +108,16 @@ def positions(request):
 def map(request):
     user = request.user
     template = 'index.html'
-    if user.is_authenticated():
+
+    if user.is_staff:
         if request.method == 'GET':
             context = {'admin':'true'}
             return render(request, template, context)
     else:
+        if request.method == 'GET':
+            lat = request.GET.get('lat', False)
+            lng = request.GET.get('lng', False)
+            context = {'lat':lat, 'lng':lng}
         return render(request, template, {})
 
 def home(request):
