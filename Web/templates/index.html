@@ -91,6 +91,7 @@
       var directionsDisplay;
       var directionsService = new google.maps.DirectionsService();
       var map;
+      var infowindow = null;
       var position_actual,position_final; 
       var markers=[];
       var results=[];
@@ -294,34 +295,42 @@
       }
       {% endif %}
       function attachSecretMessage(marker) {
-        var infowindow = new google.maps.InfoWindow({
-                  content: marker.title
-        });
-
+       
         google.maps.event.addListener(marker, 'click', function() {
-                infowindow.open(marker.get('map'), marker);
-                position_final=marker.position;
-                            
+          
+          if (infowindow) {
+            infowindow.close();
+          }
+          infowindow = new google.maps.InfoWindow({
+                    content: marker.title
+          });
+          infowindow.open(map, marker);
+          position_final=marker.position;
+
         });
       }
       google.maps.event.addDomListener(window, 'load', initialize);
 
       $(document).ready(function(){
-          $('#btn_lateral').click(function(){
-              if($(this).css('right')=="0px"){
-                    $(this).css('right','210px');
-                    $("#lateral").css('display','block');
-              }else{
-                    $(this).css('right','0px');
-                    $("#lateral").css('display','none');
+        $('#map-canvas').click(function(){
+          $('#btn_lateral').css('right','0px');
+          $("#lateral").css('display','none');
+        });
 
-              }
-            });
+        $('#btn_lateral').click(function(){
+          if($(this).css('right')=="0px"){
+            $(this).css('right','210px');
+            $("#lateral").css('display','block');
+          }else{
+            $(this).css('right','0px');
+            $("#lateral").css('display','none');
+          }
+        });
 
         $.ajax(
           {
             type:"GET",
-            url:"places/",
+            url:"/places/",
             async: true,
             dataType:"Json",
             contenType:"application/Json; charset=utf-8",
@@ -329,7 +338,7 @@
               var $subType = $("#cbo_type");
               var $subTypeFilter = $("#cbo_type_filter");
               $subType.empty();
-              $(data.responseData.results).each( function () {
+              $(data.results).each( function () {
                 $subType.append($('<option></option>').attr("value", this.id).text(this.name));
                 $subTypeFilter.append($('<option></option>').attr("value", this.id).text(this.name));
                });
