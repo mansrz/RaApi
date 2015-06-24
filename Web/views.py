@@ -201,6 +201,7 @@ def getString(text):
         text = unicode(text, 'utf-8')
     except TypeError:
         return text
+    return text
 
 def existposition(pos):
     val = Position.objects.filter(latitude = pos.latitude, longitude = pos.longitude)
