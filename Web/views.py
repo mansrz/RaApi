@@ -195,6 +195,13 @@ def search(request):
         response['Content-Type'] = 'application/json; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
         return response
+
+def getString(text):
+    try:
+        text = unicode(text, 'utf-8')
+    except TypeError:
+        return text
+
 def existposition(pos):
     val = Position.objects.filter(latitude = pos.latitude, longitude = pos.longitude)
     return len(val)>0
@@ -217,7 +224,7 @@ def getPoints(request):
                         position = Position()
                         position.profile = profile_
                         for d in p['properties']:
-                            value =  p['properties'][''+d]
+                            value =  getString(p['properties'][''+d])
                             if value is not None:
                                 if d == 'NOMBRE_2':
                                     position.name = value
