@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
     'Web',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,6 +53,14 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ApiRa.urls'
 
 WSGI_APPLICATION = 'ApiRa.wsgi.application'
+
+REST_FRAMEWORK = {
+        # Use Django's standard `django.contrib.auth` permissions,
+        # or allow read-only access for unauthenticated users.
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+            ]
+        }
 
 
 # Database
@@ -83,4 +92,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = '/var/www/kokoara/static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
