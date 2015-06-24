@@ -9,7 +9,7 @@ from suds.xsd.doctor import ImportDoctor, Import
 from suds.client import Client
 
 
-from models import PlaceType, Position
+from models import *
 # Create your views here.
 
 def verifyUser(request):
@@ -197,4 +197,58 @@ def search(request):
         response['Content-Type'] = 'application/json; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
         return response
-  
+def existposition(pos):
+    val = Position.objects.filter(latitude = pos.latitude, longitude = pos.longitude)
+    return len(val)>0
+
+def getPoints(request):
+    if request.method == 'GET':
+        profile = request.GET.get('profile', False)
+        if profile: 
+            profile_ = Profile.objects.get(pk = profile)
+            if not profile_ is None:
+                if not profile_.url is None: 
+                    import json
+                    import urllib2
+                    url = profile_.url
+                    data = json.load(urllib2.urlopen(url))
+                    points = []
+                    features = data['features']
+                    names = []
+                    for p in data['features']:
+                        position = Position()
+                        position.profile = profile_
+                        for d in p['properties']:
+                            value =  p['properties'][''+d]
+                            if value is not None:
+                                print d
+                                print value
+                                if d == 'NOMBRE_2':
+                                    position.name = value
+                                elif d == 'TIPO':
+                                    print value
+                                    position.tipo = value
+                                elif d == 'PLANTA':
+                                    position.planta = value
+                                elif d == 'DESCRIPCIO':
+                                    position.descripction = value
+                                elif d == 'UNIDAD': 
+                                    position.unidad = value
+                                elif d == 'COTA':
+                                    position.cota = value
+                                elif d == 'X':
+                                    position.latitude = value
+                                elif d == 'Y':
+                                    position.longitude = value
+                                elif d == 'CODIGO':
+                                    position.codigo = value
+                                elif d == 'BLOQUE':
+                                    position.bloque = value
+                        if not existposition(position):
+                            position.save()
+                    return HttpResponse('Todo bien')
+                else:
+                    return HttpResponseBadRequest('mal')
+
+
+
