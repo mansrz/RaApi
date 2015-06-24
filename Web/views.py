@@ -43,10 +43,8 @@ def verifyUser(request):
 
 
 def placeTypes(request):
-    print request
     if request.method == 'GET':
         places = PlaceType.objects.all()
-        print places
         response = render_to_response(
             'places.json',
             {'places': places},
@@ -221,12 +219,9 @@ def getPoints(request):
                         for d in p['properties']:
                             value =  p['properties'][''+d]
                             if value is not None:
-                                print d
-                                print value
                                 if d == 'NOMBRE_2':
                                     position.name = value
                                 elif d == 'TIPO':
-                                    print value
                                     position.tipo = value
                                 elif d == 'PLANTA':
                                     position.planta = value
