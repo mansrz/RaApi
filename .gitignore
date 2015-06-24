@@ -6,6 +6,7 @@
 /static
 backup-file.sql
 db.sqlite3
+deploy.sh
 users
 *~
 .idea/*
