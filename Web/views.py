@@ -44,7 +44,7 @@ def verifyUser(request):
 
 def placeTypes(request):
     if request.method == 'GET':
-        places = PlaceType.objects.all()
+        places = Profile.objects.all()
         response = render_to_response(
             'places.json',
             {'places': places},
@@ -69,7 +69,7 @@ def positions(request):
                 pk = int(typeplace)
             except:
                 pk = 0
-            positions = Position.objects.filter(place__pk=pk)
+            positions = Position.objects.filter(profile__pk=pk)
         response = render_to_response(
         'positions.json',
         {'positions': positions},
@@ -89,7 +89,7 @@ def positions(request):
                 lat = request.POST['lat']
                 lon = request.POST['lon']
                 place = request.POST['place']
-                type_place = PlaceType.objects.get(pk=place)
+                type_place = Profile.objects.get(pk=place)
             except:
                 return HttpResponseBadRequest()
             if len(name) <2:
