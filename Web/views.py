@@ -240,9 +240,9 @@ def getPoints(request):
                                 elif d == 'COTA':
                                     position.cota = value
                                 elif d == 'X':
-                                    position.longitude = value
-                                elif d == 'Y':
                                     position.latitude = value
+                                elif d == 'Y':
+                                    position.longitude = value
                                 elif d == 'CODIGO':
                                     position.codigo = value
                                 elif d == 'BLOQUE':
