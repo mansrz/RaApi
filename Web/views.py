@@ -255,5 +255,3 @@ def getPoints(request):
                     else:
                         return HttpResponseBadRequest('mal')
 
-
-
