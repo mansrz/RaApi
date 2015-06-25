@@ -210,48 +210,50 @@ def existposition(pos):
 def getPoints(request):
     if request.method == 'GET':
         profile = request.GET.get('profile', False)
-        if profile: 
-            profile_ = Profile.objects.get(pk = profile)
-            if not profile_ is None:
-                if not profile_.url is None: 
-                    import json
-                    import urllib2
-                    url = profile_.url
-                    data = json.load(urllib2.urlopen(url))
-                    points = []
-                    features = data['features']
-                    names = []
-                    for p in data['features']:
-                        position = Position()
-                        position.profile = profile_
-                        for d in p['properties']:
-                            value =  getString(p['properties'][''+d])
-                            if value is not None:
-                                if d == 'NOMBRE_2':
-                                    position.name = value
-                                elif d == 'TIPO':
-                                    position.tipo = value
-                                elif d == 'PLANTA':
-                                    position.planta = value
-                                elif d == 'DESCRIPCIO':
-                                    position.descripction = value
-                                elif d == 'UNIDAD': 
-                                    position.unidad = value
-                                elif d == 'COTA':
-                                    position.cota = value
-                                elif d == 'X':
-                                    position.latitude = value
-                                elif d == 'Y':
-                                    position.longitude = value
-                                elif d == 'CODIGO':
-                                    position.codigo = value
-                                elif d == 'BLOQUE':
-                                    position.bloque = value
-                        if not existposition(position):
-                            position.save()
-                    return HttpResponse('Todo bien')
-                else:
-                    return HttpResponseBadRequest('mal')
+        profiles = Profile.objects.all()
+        for profile in profiles:
+            if profile: 
+                profile_ = Profile.objects.get(pk = profile)
+                if not profile_ is None:
+                    if not profile_.url is None: 
+                        import json
+                        import urllib2
+                        url = profile_.url
+                        data = json.load(urllib2.urlopen(url))
+                        points = []
+                        features = data['features']
+                        names = []
+                        for p in data['features']:
+                            position = Position()
+                            position.profile = profile_
+                            for d in p['properties']:
+                                value =  getString(p['properties'][''+d])
+                                if value is not None:
+                                    if d == 'NOMBRE_2':
+                                        position.name = value
+                                    elif d == 'TIPO':
+                                        position.tipo = value
+                                    elif d == 'PLANTA':
+                                        position.planta = value
+                                    elif d == 'DESCRIPCIO':
+                                        position.descripction = value
+                                    elif d == 'UNIDAD': 
+                                        position.unidad = value
+                                    elif d == 'COTA':
+                                        position.cota = value
+                                    elif d == 'X':
+                                        position.latitude = value
+                                    elif d == 'Y':
+                                        position.longitude = value
+                                    elif d == 'CODIGO':
+                                        position.codigo = value
+                                    elif d == 'BLOQUE':
+                                        position.bloque = value
+                            if not existposition(position):
+                                position.save()
+                        return HttpResponse('Todo bien')
+                    else:
+                        return HttpResponseBadRequest('mal')
 
 
 
