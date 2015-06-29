@@ -457,6 +457,9 @@
          });
          {% endif %}
          $("#btn_lateral").children().addClass('box_rotate box_transition');
+         {% if profile %}
+         $("cbo_type_filter").val('{{profile}}').change();
+         {% endif %}
      });
 
 

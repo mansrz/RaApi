@@ -115,7 +115,8 @@ def map(request):
         if request.method == 'GET':
             lat = request.GET.get('lat', False)
             lng = request.GET.get('lng', False)
-            context = {'lat':lat, 'lng':lng}
+            profile = request.GET.get('profile', False)
+            context = {'lat':lat, 'lng':lng, 'profile':profile}
         return render(request, template, {})
 
 def home(request):
@@ -186,7 +187,7 @@ def search(request):
         terms = [term for term in terms if term not in es]
         term = ' '.join(terms)
 
-        positions = Position.objects.filter(Q(name__contains=term.lower()))
+        positions = Position.objects.filter(Q(name__contains=term.lower()) or Q(unidad__contains=term.lower()))
         response = render_to_response(
         'positions.json',
         {'positions': positions},
