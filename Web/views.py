@@ -210,11 +210,10 @@ def existposition(pos):
 
 def getPoints(request):
     if request.method == 'GET':
-        profile = request.GET.get('profile', False)
         profiles = Profile.objects.all()
         for profile in profiles:
             if profile: 
-                profile_ = Profile.objects.get(pk = profile)
+                profile_ = Profile.objects.get(pk = profile.id)
                 if not profile_ is None:
                     if not profile_.url is None: 
                         import json
@@ -243,9 +242,9 @@ def getPoints(request):
                                     elif d == 'COTA':
                                         position.cota = value
                                     elif d == 'X':
-                                        position.latitude = value
-                                    elif d == 'Y':
                                         position.longitude = value
+                                    elif d == 'Y':
+                                        position.latitude = value
                                     elif d == 'CODIGO':
                                         position.codigo = value
                                     elif d == 'BLOQUE':
