@@ -106,7 +106,7 @@ def positions(request):
 def map(request):
     user = request.user
     template = 'index.html'
-
+    context = {}
     if user.is_staff:
         if request.method == 'GET':
             context = {'admin':'true'}
@@ -117,7 +117,7 @@ def map(request):
             lng = request.GET.get('lng', False)
             profile = request.GET.get('profile', False)
             context = {'lat':lat, 'lng':lng, 'profile':profile}
-        return render(request, template, {})
+        return render(request, template, context)
 
 def home(request):
     usuario=request.user
