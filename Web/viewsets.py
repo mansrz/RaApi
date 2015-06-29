@@ -12,3 +12,11 @@ class PositionViewSet(viewsets.ModelViewSet):
     serializer_class = PositionSerializer
     queryset = Position.objects.all()
 
+    def get_queryset(self):
+        queryset = Position.objects.all()
+        profile = self.request.query_params.get('profile', None)
+        if profile is not None:
+            queryset = queryset.filter(profile=profile)
+        return queryset
+
+
