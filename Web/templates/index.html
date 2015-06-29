@@ -277,6 +277,7 @@
                   });
                   markers.push(marker);
                   attachSecretMessage(marker);
+
                   filterPoints();
                }
        
@@ -352,6 +353,12 @@
                 $subType.append($('<option></option>').attr("value", this.id).text(this.name));
                 $subTypeFilter.append($('<option></option>').attr("value", this.id).text(this.name));
                });
+             {% if profile %}
+             //{{profile}}
+             if ($("#cbo_type_filter option[value={{profile}}]").length ==1) {
+               $("#cbo_type_filter").val('{{profile}}').change();
+             }
+             {% endif %}
             },
           });
         {% if admin %}
@@ -460,10 +467,9 @@
          });
          {% endif %}
          $("#btn_lateral").children().addClass('box_rotate box_transition');
-         {% if profile %}
-         $("cbo_type_filter").val('{{profile}}').change();
-         {% endif %}
-     });
+
+
+      });
 
 
     </script>

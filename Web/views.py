@@ -117,6 +117,7 @@ def map(request):
             lng = request.GET.get('lng', False)
             profile = request.GET.get('profile', False)
             context = {'lat':lat, 'lng':lng, 'profile':profile}
+            print profile
         return render(request, template, context)
 
 def home(request):
@@ -210,48 +211,51 @@ def existposition(pos):
 
 def getPoints(request):
     if request.method == 'GET':
+        status =True
         profiles = Profile.objects.all()
-        for profile in profiles:
-            if profile: 
-                profile_ = Profile.objects.get(pk = profile.id)
-                if not profile_ is None:
-                    if not profile_.url is None: 
-                        import json
-                        import urllib2
-                        url = profile_.url
-                        data = json.load(urllib2.urlopen(url))
-                        points = []
-                        features = data['features']
-                        names = []
-                        for p in data['features']:
-                            position = Position()
-                            position.profile = profile_
-                            for d in p['properties']:
-                                value =  getString(p['properties'][''+d])
-                                if value is not None:
-                                    if d == 'NOMBRE_2':
-                                        position.name = value
-                                    elif d == 'TIPO':
-                                        position.tipo = value
-                                    elif d == 'PLANTA':
-                                        position.planta = value
-                                    elif d == 'DESCRIPCIO':
-                                        position.descripction = value
-                                    elif d == 'UNIDAD': 
-                                        position.unidad = value
-                                    elif d == 'COTA':
-                                        position.cota = value
-                                    elif d == 'X':
-                                        position.longitude = value
-                                    elif d == 'Y':
-                                        position.latitude = value
-                                    elif d == 'CODIGO':
-                                        position.codigo = value
-                                    elif d == 'BLOQUE':
-                                        position.bloque = value
-                            if not existposition(position):
-                                position.save()
-                        return HttpResponse('Todo bien')
-                    else:
-                        return HttpResponseBadRequest('mal')
+        for profile_ in profiles:
+            if not profile_.url is None: 
+                import json
+                import urllib2
+                url = profile_.url
+                print url
+                data = json.load(urllib2.urlopen(url))
+                points = []
+                features = data['features']
+                names = []
+                for p in data['features']:
+                    position = Position()
+                    position.profile = profile_
+                    for d in p['properties']:
+                        value =  getString(p['properties'][''+d])
+                        if value is not None:
+                            if d == 'NOMBRE_2':
+                                position.name = value
+                            elif d == 'TIPO':
+                                position.tipo = value
+                            elif d == 'PLANTA':
+                                position.planta = value
+                            elif d == 'DESCRIPCIO':
+                                position.descripction = value
+                            elif d == 'UNIDAD': 
+                                position.unidad = value
+                            elif d == 'COTA':
+                                position.cota = value
+                            elif d == 'X':
+                                position.longitude = value
+                            elif d == 'Y':
+                                position.latitude = value
+                            elif d == 'CODIGO':
+                                position.codigo = value
+                            elif d == 'BLOQUE':
+                                position.bloque = value
+                    if not existposition(position):
+                        position.save()
+            else:
+                status = False
+        if status:
+            return HttpResponse('todo bien')
+        else:
+            return HttpResponseBadRequest('no habia una url')
+
 
