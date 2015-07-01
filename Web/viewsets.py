@@ -16,7 +16,7 @@ class PositionViewSet(viewsets.ModelViewSet):
         queryset = Position.objects.all()
         profile = self.request.query_params.get('profile', None)
         if profile is not None:
-            queryset = queryset.filter(profile=profile)
+            queryset = queryset.filter(place=profile)
         return queryset
 
 

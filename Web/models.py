@@ -11,8 +11,14 @@ class Profile(models.Model):
     def __unicode__(self):
         return self.name  
 
+class Place(models.Model):
+    name = models.CharField(max_length=64)
+    def __unicode__(self):
+        return self.name
+
 class Position(models.Model):
     name = models.CharField(max_length=64)
+    place = models.ForeignKey(Place, related_name = "Positions")
     latitude = models.CharField(max_length=64)
     longitude = models.CharField(max_length=64)
     cota = models.IntegerField(null = True)

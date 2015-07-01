@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     # Examples:
     #url(r'^$', 'ApiRa.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    url(r'api/', include(router.urls)),
+    url(r'api/', include(router.urls)), #apirerstframework
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$','Web.views.home', name='home'),
     url(r'^places/', 'Web.views.placeTypes', name='types'),

@@ -11,17 +11,27 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='Place',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=64)),
+            ],
+        ),
+        migrations.CreateModel(
             name='Position',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=64)),
                 ('latitude', models.CharField(max_length=64)),
                 ('longitude', models.CharField(max_length=64)),
+                ('cota', models.IntegerField(null=True)),
                 ('bloque', models.CharField(max_length=64, null=True)),
                 ('codigo', models.CharField(max_length=32, null=True)),
                 ('unidad', models.CharField(max_length=32, null=True)),
                 ('tipo', models.CharField(max_length=32, null=True)),
                 ('planta', models.IntegerField(null=True)),
+                ('descripction', models.CharField(max_length=256, null=True)),
+                ('place', models.ForeignKey(related_name='Positions', to='Web.Place')),
             ],
         ),
         migrations.CreateModel(

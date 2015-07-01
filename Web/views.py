@@ -44,7 +44,7 @@ def verifyUser(request):
 
 def placeTypes(request):
     if request.method == 'GET':
-        places = Profile.objects.all()
+        places = Place.objects.all()
         response = render_to_response(
             'places.json',
             {'places': places},
@@ -225,12 +225,16 @@ def getPoints(request):
                 names = []
                 for p in data['features']:
                     position = Position()
+                    tipo = p['properties']['TIPO']
+                    tipo, created = Place.objects.get_or_create(name = tipo)
+                    position.place = tipo
                     position.profile = profile_
                     for d in p['properties']:
                         value =  getString(p['properties'][''+d])
                         if value is not None:
-                            if d == 'NOMBRE_2':
-                                position.name = value
+                            if d == 'NOMBRE_2' or d == 'NOMBRE':
+                                if len(value)>1:
+                                    position.name = value
                             elif d == 'TIPO':
                                 position.tipo = value
                             elif d == 'PLANTA':

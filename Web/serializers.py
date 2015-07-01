@@ -8,5 +8,5 @@ class ProfileSerializer(serializers.ModelSerializer):
 class PositionSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Position
-        fields = ('id', 'name', 'longitude', 'latitude', 'cota', 'profile', 'bloque', 'codigo','unidad', 'tipo','planta','descripction')
+        fields = ('id', 'name', 'longitude', 'latitude', 'cota', 'profile', 'bloque', 'codigo','unidad', 'tipo','planta','descripction','place')
 
