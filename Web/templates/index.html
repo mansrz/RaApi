@@ -141,16 +141,7 @@
             position:   new google.maps.LatLng(e.latLng.lat(),e.latLng.lng()),
             }
           ); 
-          speakNow = function() {
-            meSpeak.speak(marker.title, {
-              amplitude: 100,
-              wordgap: 0,
-              pitch: 50,
-              speed: 175,
-              variant: "m2"
-            });
-          };
-          speakNow();
+      
           position_final= marker; 
         });
         {% if not lat and not lng %}
@@ -345,6 +336,17 @@
           });
           infowindow.open(map, marker);
           position_final=marker.position;
+          speakNow = function() {
+            meSpeak.speak(marker.title, {
+              amplitude: 100,
+              wordgap: 0,
+              pitch: 50,
+              speed: 175,
+              variant: "m2"
+            });
+          };
+          speakNow();
+
 
         });
       }
@@ -535,9 +537,9 @@
         <b>Modo de transporte: </b>
         <select id="mode">
           <option value="DRIVING">Conduciendo</option>
-          <option value="WALKING">Caminando</option>
+          <option value="WALKING" selected>Caminando</option>
           <option value="BICYCLING">Bicicleta</option>
-          <option value="TRANSIT">Transitando</option>
+          <option value="TRANSIT" >Transitando</option>
         </select>
         <br/>        
         <b>B&uacutesqueda:</b>
