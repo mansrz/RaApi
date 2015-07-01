@@ -86,6 +86,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>!-->
     <script src="http://maps.googleapis.com/maps/api/js"> </script>
+    <script type="text/javascript" src="{% static 'js/mespeak.js' %}"></script>
+
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
       var directionsDisplay;
@@ -109,6 +111,11 @@
             center: new google.maps.LatLng(-2.14700, -79.96476)
             {% endif %}
         };
+        {% if lat and lng %}
+          var pos = new google.maps.LatLng({{lat}}, {{lng}});
+          position_actual= pos; 
+        {% endif %}
+
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
        {% if admin %}
@@ -117,19 +124,40 @@
             });
        {% endif %}
        {% if not admin %}
+        meSpeak.loadConfig("{% static 'mespeak_config.json' %}");
+        meSpeak.loadVoice("{% static 'voices/en/es.json' %}");
+
+        function voiceLoaded(success, message) {
+          if (success) {
+            alert("Voice loaded: "+message+".");
+          }
+          else {
+            alert("Failed to load a voice: "+message);
+          }
+        }
 
         google.maps.event.addListener(map, 'click', function(e) {
-         var marker = new google.maps.Marker({
+          var marker = new google.maps.Marker({
             position:   new google.maps.LatLng(e.latLng.lat(),e.latLng.lng()),
-          }
-        );       
-         position_final= marker; 
-       });
-       {% if not lat and not lng %}
-       if(navigator.geolocation) {
+            }
+          ); 
+          speakNow = function() {
+            meSpeak.speak(marker.title, {
+              amplitude: 100,
+              wordgap: 0,
+              pitch: 50,
+              speed: 175,
+              variant: "m2"
+            });
+          };
+          speakNow();
+          position_final= marker; 
+        });
+        {% if not lat and not lng %}
+        if(navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             var pos = new google.maps.LatLng(position.coords.latitude,
-              position.coords.longitude);
+                position.coords.longitude);
 
             var infowindow = new google.maps.InfoWindow({
               map: map,
