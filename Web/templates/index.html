@@ -337,12 +337,14 @@
           infowindow.open(map, marker);
           position_final=marker.position;
           speakNow = function() {
+            meSpeak.setVolume(1);
+
             meSpeak.speak(marker.title, {
               amplitude: 100,
               wordgap: 0,
               pitch: 50,
               speed: 175,
-              variant: "m2"
+              variant: "m7"
             });
           };
           speakNow();
