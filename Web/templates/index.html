@@ -163,7 +163,7 @@
                   var marker = new google.maps.Marker({
                           position:   new google.maps.LatLng(this.lat,this.lng),
                           map: map,
-                          title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
+                          title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>'
                        }
                     );  
                   markers.push(marker);
@@ -418,7 +418,7 @@
                   $(data.responseData.results).each( function () {
                     var marker = new google.maps.Marker({
                           position:   new google.maps.LatLng(this.lat,this.lng),
-                          title : '<h3>'+ this.streetAddress + '</h3>' + this.titleNoFormatting +'<br/>Lat: '+this.lat+' Long:'+this.lng
+                          title : '<h3>'+ this.streetAddress + '</h3>' + this.titleNoFormatting +'<br/>'
                        }
                     );  
 
