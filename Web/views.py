@@ -225,7 +225,10 @@ def getPoints(request):
                 names = []
                 for p in data['features']:
                     position = Position()
+                    import re
                     tipo = p['properties']['TIPO']
+                    tipo = re.sub(r'\s+', ' ', tipo.strip())
+                    tipo = ''.join(e for e in tipo if e.isalnum())
                     tipo, created = Place.objects.get_or_create(name = tipo)
                     position.place = tipo
                     position.profile = profile_
