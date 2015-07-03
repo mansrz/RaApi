@@ -86,7 +86,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>!-->
     <script src="http://maps.googleapis.com/maps/api/js"> </script>
-    <script type="text/javascript" src="{% static 'js/mespeak.js' %}"></script>
+    <!--<script type="text/javascript" src="{% static 'js/mespeak.js' %}"></script>-->
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
@@ -124,17 +124,8 @@
             });
        {% endif %}
        {% if not admin %}
-        meSpeak.loadConfig("{% static 'mespeak_config.json' %}");
-        meSpeak.loadVoice("{% static 'voices/en/es.json' %}");
-
-        function voiceLoaded(success, message) {
-          if (success) {
-            alert("Voice loaded: "+message+".");
-          }
-          else {
-            alert("Failed to load a voice: "+message);
-          }
-        }
+       /* meSpeak.loadConfig("{% static 'mespeak_config.json' %}");
+        meSpeak.loadVoice("{% static 'voices/en/es.json' %}");*/
 
         google.maps.event.addListener(map, 'click', function(e) {
           var marker = new google.maps.Marker({
@@ -336,7 +327,7 @@
           });
           infowindow.open(map, marker);
           position_final=marker.position;
-          speakNow = function() {
+          /*speakNow = function() {
             meSpeak.setVolume(1);
 
             meSpeak.speak(marker.title, {
@@ -348,7 +339,7 @@
             });
           };
           speakNow();
-
+          */
 
         });
       }
