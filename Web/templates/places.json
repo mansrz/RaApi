@@ -1,13 +1,12 @@
 {% spaceless %}
 {  "results":
-    [
+  [
     {% for p in places %}
-        {
-            "id": "{{ p.id }}",
-            "name": "{{ p.name }}"
-            
-        }{% if not forloop.last %},{% endif %}
+    {
+      "id": "{{ p.id }}",
+      "name": "{{ p.name }}"
+    }{% if not forloop.last %},{% endif %}
     {% endfor %}
-    ]
+  ]
 }
 {% endspaceless %}

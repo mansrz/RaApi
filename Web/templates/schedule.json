@@ -1,0 +1,17 @@
+{% spaceless %}
+{ "responseData":{
+  "results":
+  [
+    {% for schedule in schedulers %}
+    {
+      name: "{{ schedule.name }}",
+      codmat: "{{ schedule.codmat }}",
+      horainit: "{{ schedule.horainit }}",
+      horafin: "{{ schedule.horafin }}",
+      aula: {{ schedule.aula }}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+}
+{% endspaceless %}

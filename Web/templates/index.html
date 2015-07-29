@@ -6,7 +6,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
-      
+
       html, body, #map-canvas {
         height: 100%;
         margin: 0px;
@@ -21,20 +21,20 @@
         z-index: 5;
         background-color: #fff;
         opacity: 0.9;
-        padding: 5px;        
-        cursor: pointer; 
+        padding: 5px;
+        cursor: pointer;
       }
 
-     #logo {
+      #logo {
         position: absolute;
         top: 0px;
         left: 50%;
         z-index: 5;
         opacity: 0.2;
-        padding: 5px;               
+        padding: 5px;
       }
 
-     #btn_lateral{
+      #btn_lateral{
         position: absolute;
         top: 90px;
         width: 40px;
@@ -43,12 +43,12 @@
         z-index: 6;
         background-color: #fff;
         opacity: 0.9;
-        padding: 7px;        
+        padding: 7px;
         font-size: 10pt;
         cursor: pointer;
-     }
+      }
 
-     #lateral {
+      #lateral {
         position: absolute;
         top: 90px;
         width: 210px;
@@ -57,7 +57,7 @@
         z-index: 5;
         background-color: #fff;
         opacity: 0.9;
-        padding: 10px;        
+        padding: 10px;
         display:none;
       }
 
@@ -90,409 +90,409 @@
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>
-      var directionsDisplay;
-      var directionsService = new google.maps.DirectionsService();
-      var map;
-      var infowindow = null;
-      var position_actual,position_final; 
-      var markers=[];
-      var results=[];
-      function initialize() {
-        directionsDisplay  = new google.maps.DirectionsRenderer();
-        var mapOptions = {
-            zoom: 18,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            {% if admin %}
-            disableDoubleClickZoom: true,
-            {% endif %}
-            {% if lat and lng %}
-            center: new google.maps.LatLng({{lat}}, {{lng}})
-            {% else %}
-            center: new google.maps.LatLng(-2.14700, -79.96476)
-            {% endif %}
-        };
-        {% if lat and lng %}
-          var pos = new google.maps.LatLng({{lat}}, {{lng}});
-          position_actual= pos; 
-        {% endif %}
+var directionsDisplay;
+var directionsService = new google.maps.DirectionsService();
+var map;
+var infowindow = null;
+var position_actual,position_final;
+var markers=[];
+var results=[];
+function initialize() {
+  directionsDisplay  = new google.maps.DirectionsRenderer();
+  var mapOptions = {
+    zoom: 18,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    {% if admin %}
+    disableDoubleClickZoom: true,
+    {% endif %}
+    {% if lat and lng %}
+    center: new google.maps.LatLng({{lat}}, {{lng}})
+    {% else %}
+    center: new google.maps.LatLng(-2.14700, -79.96476)
+    {% endif %}
+  };
+  {% if lat and lng %}
+  var pos = new google.maps.LatLng({{lat}}, {{lng}});
+  position_actual= pos;
+  {% endif %}
 
-        map = new google.maps.Map(document.getElementById('map-canvas'),
-            mapOptions);
-       {% if admin %}
-         google.maps.event.addListener(map, 'dblclick', function(e) {
-            placeMarker(e.latLng, map);
-            });
-       {% endif %}
-       {% if not admin %}
-       /* meSpeak.loadConfig("{% static 'mespeak_config.json' %}");
-        meSpeak.loadVoice("{% static 'voices/en/es.json' %}");*/
+  map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+  {% if admin %}
+  google.maps.event.addListener(map, 'dblclick', function(e) {
+    placeMarker(e.latLng, map);
+  });
+  {% endif %}
+  {% if not admin %}
+  /* meSpeak.loadConfig("{% static 'mespeak_config.json' %}");
+     meSpeak.loadVoice("{% static 'voices/en/es.json' %}");*/
 
-        google.maps.event.addListener(map, 'click', function(e) {
-          var marker = new google.maps.Marker({
-            position:   new google.maps.LatLng(e.latLng.lat(),e.latLng.lng()),
-            }
-          ); 
-      
-          position_final= marker; 
-        });
-        {% if not lat and not lng %}
-        if(navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
-            var pos = new google.maps.LatLng(position.coords.latitude,
-                position.coords.longitude);
+  google.maps.event.addListener(map, 'click', function(e) {
+    var marker = new google.maps.Marker({
+      position:   new google.maps.LatLng(e.latLng.lat(),e.latLng.lng()),
+    }
+    );
 
-            var infowindow = new google.maps.InfoWindow({
+    position_final= marker;
+  });
+  {% if not lat and not lng %}
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = new google.maps.LatLng(position.coords.latitude,
+          position.coords.longitude);
+
+      var infowindow = new google.maps.InfoWindow({
+        map: map,
+        position: pos,
+        content: 'Tu est&aacutes aqu&iacute'
+      });
+
+      map.setCenter(pos);
+      position_actual= pos;
+    }, function() {
+      swal("Éxito", "¡Encontramos tu ubicación!", "success");
+
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    swal("):", "No podimos encontrar tu ubcicación ", "success");
+  }
+  {% endif %}
+
+  directionsDisplay.setMap(map);
+  {% endif %}
+  $.ajax(
+      {
+        type:"GET",
+        url:"/positions",
+        async: true,
+        dataType:"Json",
+        contenType:"application/Json; charset=utf-8",
+        success: function(data){
+          $(data.responseData.results).each( function () {
+            var marker = new google.maps.Marker({
+              position:   new google.maps.LatLng(this.lat,this.lng),
               map: map,
-              position: pos,
-              content: 'Tu est&aacutes aqu&iacute'
-            });
-
-            map.setCenter(pos);
-            position_actual= pos; 
-            }, function() {
-               swal("Éxito", "¡Encontramos tu ubicación!", "success"); 
-
-            });
-        } else {
-          // Browser doesn't support Geolocation
-               swal("):", "No podimos encontrar tu ubcicación ", "success"); 
-        }
-       {% endif %}
-
-        directionsDisplay.setMap(map);
-        {% endif %}
-        $.ajax(
-            {
-              type:"GET",
-              url:"/positions",
-              async: true,
-              dataType:"Json",
-              contenType:"application/Json; charset=utf-8",
-              success: function(data){
-                $(data.responseData.results).each( function () {
-                  var marker = new google.maps.Marker({
-                          position:   new google.maps.LatLng(this.lat,this.lng),
-                          map: map,
-                          title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>'
-                       }
-                    );  
-                  markers.push(marker);
-                  attachSecretMessage(marker);                  
-                  });
-              },
-            });
-        $('#cbo_type_filter').on('change',
-            function(){
-                var filter=$("#cbo_type_filter option:selected").text();
-                console.log(filter);
-                AddPoints(map,filter);
+              title : this.streetAddress + '<br/>' + this.titleNoFormatting +'<br/>'
             }
             );
-
-      }
-
-      var filterPoints = function(){
-                var filter=$("#cbo_type_filter option:selected").text();
-                AddPoints(map,filter);
-            }
-
-      function EqualsMarker(marker, marker_){
-        if(marker.position.lat() == marker_.position.lat()  && marker.position.lng() == marker_.position.lng()){
-           return true;
-        } 
-        return false;
-      }
-
-      function AddPoints(map,filter){
-        $.ajax(
-          {
-            type:"GET",
-            url:"/positions",
-            async: true,
-            dataType:"Json",
-            contenType:"application/Json; charset=utf-8",
-            success: function(data){
-              $(data.responseData.results).each( function () {
-                var found = false;
-                if(filter=="Todos"){
-                    var marker = new google.maps.Marker({
-                          position:   new google.maps.LatLng(this.lat,this.lng),
-                        }
-                    ); 
-                    for (var i = 0; i < markers.length; i++) {
-                      markers[i].setMap(map);
-                    }       
-                }else{
-                  console.log(filter);
-                  console.log(this.titleNoFormatting);
-                  if(filter == this.titleNoFormatting){
-                    var marker = new google.maps.Marker({
-                          position:   new google.maps.LatLng(this.lat,this.lng),
-                      }
-                    );  
-                    for (var i = 0; i < markers.length; i++) {
-                      if(EqualsMarker(markers[i],marker))
-                      {
-                        markers[i].setMap(map);                         
-                      }
-                    } 
-                  }else{
-                    var marker = new google.maps.Marker({
-                        position:   new google.maps.LatLng(this.lat,this.lng),
-                      }
-                    );
-                    for (var i = 0; i < markers.length; i++) {
-                      if(EqualsMarker(markers[i],marker))
-                       markers[i].setMap(null);
-                    } 
-                  }
-                }                  
-              });
-            }
-          } 
-          );
-      }
-      function clearMarkers() {
-        setAllMap(null);
-      }
-      function setAllMap(map) {
-        for (var i = 0; i < markers.length; i++) {
-          markers[i].setMap(map);
-        }
-      }
-      {% if admin %}
-      function placeMarker(position, map) {
-        map.panTo(position);
-        swal({ 
-          title: "¡Escogiste un punto!",
-          text: "Escoge estas coordenadas para asignarlas un tipo de lugar.",
-          type: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#A5DC86",
-          confirmButtonText: "Guardar el punto",
-          closeOnConfirm: true,
-          cancelButtonText: "Cancelar"
-          },
-           function(){
-             $('input[name="lat"]').val(position.lat());
-             $('input[name="long"]').val(position.lng());
-             $('input[name="name"]').val('');
-             $('#modal').modal('show');
-             $('#modal').on('hide.bs.modal',function(){
-               if( $('input[name="name"]').val().length >2){
-                  var marker = new google.maps.Marker({
-                      position: position,
-                      map: map,
-                      title : $('input[name="name"]').val() + '<br/>' + $('#cbo_type option:selected').text() +'<br/>Lat: '+$('input[name="lat"]').val() +' Long:'+$('input[name="long"]').val()
-                  });
-                  markers.push(marker);
-                  attachSecretMessage(marker);
-
-                  filterPoints();
-               }
-       
-             });
-                      
-          });       
-      }
-      {% else %}
-      function calcRoute() {
-        if (position_actual == null || position_final == null || typeof position_actual == 'undefined' || typeof position_final == 'undefined' ) {
-          swal("oops!","Debes escoger un punto a donde ir o no se ha podido encontrar tu ubicación ", "error");
-          return 
-        }
-        var mode = $('#mode option:selected').val();
-
-        var request = {
-           origin:position_actual,
-           destination:position_final,
-           travelMode: google.maps.TravelMode[mode]
-        };
-        directionsService.route(request, function(response, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-            directionsDisplay.setDirections(response);
-            }
-            });
-      }
-      {% endif %}
-      function attachSecretMessage(marker) {
-       
-        google.maps.event.addListener(marker, 'click', function() {
-          
-          if (infowindow) {
-            infowindow.close();
-          }
-          infowindow = new google.maps.InfoWindow({
-                    content: marker.title
+            markers.push(marker);
+            attachSecretMessage(marker);
           });
-          infowindow.open(map, marker);
-          position_final=marker.position;
-          /*speakNow = function() {
-            meSpeak.setVolume(1);
-
-            meSpeak.speak(marker.title, {
-              amplitude: 100,
-              wordgap: 0,
-              pitch: 50,
-              speed: 175,
-              variant: "m7"
-            });
-          };
-          speakNow();
-          */
-
-        });
+        },
+      });
+  $('#cbo_type_filter').on('change',
+      function(){
+        var filter=$("#cbo_type_filter option:selected").text();
+        console.log(filter);
+        AddPoints(map,filter);
       }
-      google.maps.event.addDomListener(window, 'load', initialize);
+      );
 
-      $(document).ready(function(){
-        $('#map-canvas').click(function(){
-          $('#btn_lateral').css('right','0px');
-          $("#lateral").css('display','none');
+}
+
+var filterPoints = function(){
+  var filter=$("#cbo_type_filter option:selected").text();
+  AddPoints(map,filter);
+}
+
+function EqualsMarker(marker, marker_){
+  if(marker.position.lat() == marker_.position.lat()  && marker.position.lng() == marker_.position.lng()){
+    return true;
+  }
+  return false;
+}
+
+function AddPoints(map,filter){
+  $.ajax(
+      {
+        type:"GET",
+        url:"/positions",
+        async: true,
+        dataType:"Json",
+        contenType:"application/Json; charset=utf-8",
+        success: function(data){
+          $(data.responseData.results).each( function () {
+            var found = false;
+            if(filter=="Todos"){
+              var marker = new google.maps.Marker({
+                position:   new google.maps.LatLng(this.lat,this.lng),
+              }
+              );
+              for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+              }
+            }else{
+              console.log(filter);
+              console.log(this.titleNoFormatting);
+              if(filter == this.titleNoFormatting){
+                var marker = new google.maps.Marker({
+                  position:   new google.maps.LatLng(this.lat,this.lng),
+                }
+                );
+                for (var i = 0; i < markers.length; i++) {
+                  if(EqualsMarker(markers[i],marker))
+                  {
+                    markers[i].setMap(map);
+                  }
+                }
+              }else{
+                var marker = new google.maps.Marker({
+                  position:   new google.maps.LatLng(this.lat,this.lng),
+                }
+                );
+                for (var i = 0; i < markers.length; i++) {
+                  if(EqualsMarker(markers[i],marker))
+                    markers[i].setMap(null);
+                }
+              }
+            }
+          });
+        }
+      }
+  );
+}
+function clearMarkers() {
+  setAllMap(null);
+}
+function setAllMap(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+{% if admin %}
+function placeMarker(position, map) {
+  map.panTo(position);
+  swal({
+    title: "¡Escogiste un punto!",
+    text: "Escoge estas coordenadas para asignarlas un tipo de lugar.",
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#A5DC86",
+    confirmButtonText: "Guardar el punto",
+    closeOnConfirm: true,
+    cancelButtonText: "Cancelar"
+  },
+  function(){
+    $('input[name="lat"]').val(position.lat());
+    $('input[name="long"]').val(position.lng());
+    $('input[name="name"]').val('');
+    $('#modal').modal('show');
+    $('#modal').on('hide.bs.modal',function(){
+      if( $('input[name="name"]').val().length >2){
+        var marker = new google.maps.Marker({
+          position: position,
+          map: map,
+          title : $('input[name="name"]').val() + '<br/>' + $('#cbo_type option:selected').text() +'<br/>Lat: '+$('input[name="lat"]').val() +' Long:'+$('input[name="long"]').val()
         });
+        markers.push(marker);
+        attachSecretMessage(marker);
 
-        $('#btn_lateral').click(function(){
-          if($(this).css('right')=="0px"){
-            $(this).css('right','210px');
-            $("#lateral").css('display','block');
-          }else{
-            $(this).css('right','0px');
-            $("#lateral").css('display','none');
+        filterPoints();
+      }
+
+    });
+
+  });
+}
+{% else %}
+function calcRoute() {
+  if (position_actual == null || position_final == null || typeof position_actual == 'undefined' || typeof position_final == 'undefined' ) {
+    swal("oops!","Debes escoger un punto a donde ir o no se ha podido encontrar tu ubicación ", "error");
+    return
+  }
+  var mode = $('#mode option:selected').val();
+
+  var request = {
+    origin:position_actual,
+    destination:position_final,
+    travelMode: google.maps.TravelMode[mode]
+  };
+  directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(response);
+    }
+  });
+}
+{% endif %}
+function attachSecretMessage(marker) {
+
+  google.maps.event.addListener(marker, 'click', function() {
+
+    if (infowindow) {
+      infowindow.close();
+    }
+    infowindow = new google.maps.InfoWindow({
+      content: marker.title
+    });
+    infowindow.open(map, marker);
+    position_final=marker.position;
+    /*speakNow = function() {
+      meSpeak.setVolume(1);
+
+      meSpeak.speak(marker.title, {
+      amplitude: 100,
+      wordgap: 0,
+      pitch: 50,
+      speed: 175,
+      variant: "m7"
+      });
+      };
+      speakNow();
+     */
+
+  });
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+$(document).ready(function(){
+  $('#map-canvas').click(function(){
+    $('#btn_lateral').css('right','0px');
+    $("#lateral").css('display','none');
+  });
+
+  $('#btn_lateral').click(function(){
+    if($(this).css('right')=="0px"){
+      $(this).css('right','210px');
+      $("#lateral").css('display','block');
+    }else{
+      $(this).css('right','0px');
+      $("#lateral").css('display','none');
+    }
+  });
+
+  $.ajax(
+      {
+        type:"GET",
+        url:"/places/",
+        async: true,
+        dataType:"Json",
+        contenType:"application/Json; charset=utf-8",
+        success: function(data){
+          var $subType = $("#cbo_type");
+          var $subTypeFilter = $("#cbo_type_filter");
+          $subType.empty();
+          $(data.results).each( function () {
+            $subType.append($('<option></option>').attr("value", this.id).text(this.name));
+            $subTypeFilter.append($('<option></option>').attr("value", this.id).text(this.name));
+          });
+          {% if profile %}
+          //{{profile}}
+          if ($("#cbo_type_filter option[value={{profile}}]").length ==1) {
+            $("#cbo_type_filter").val('{{profile}}').change();
           }
-        });
+          {% endif %}
+        },
+      });
+  {% if admin %}
+  $("#modal").modal({}).draggable();
+  $("#modal").modal('hide');
+  $("#save").click(function(){
+    posting= $.post("/positions",{
+      name: $('input[name="name"]').val(),
+      lon: $('input[name="lat"]').val(),
+      lat: $('input[name="long"]').val(),
+      place: $('#cbo_type option:selected').val(),
+      csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
+    });
+    posting.done(function(){
+      swal("¡Buen Trabajo!", "Posicion Guardada", "success");
+      $("#modal").modal('hide');
+    });
+    posting.fail(function(){
+      swal("):", "¡Algo sucedió! Revisa los datos ", "error");
 
-        $.ajax(
+    });
+  });
+  $('#panel').click(function(){
+    swal({
+      title: "¿Deseas cerrar sesión?",
+      text: "Para seguir agregando posiciones o viendo el mapa deberás iniciar sesión de nuevo.",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#DD6B55",
+      confirmButtonText: "Sí",
+      closeOnConfirm: false ,
+      cancelButtonText: "Cancelar"
+    },
+    function(){
+      swal("Sesión Cerrada", "¡Será un hasta la próxima!", "success");
+      setTimeout(function(){$(location).attr('href','/logout')},1200);
+    });
+  });
+  {% else %}
+  swal("Muestra el camino", "Escoge un punto, da click en muestrame el camino y te mostrará uno viable. No olvides permitir que el navegador envie tu posición.","info");
+  $('#panel').click(function(){
+    calcRoute();
+  });
+  $('#search').click(function(){
+    var text_search = $('input[name="text_search"]').val();
+    if(text_search.length>2){
+      $.ajax(
           {
             type:"GET",
-            url:"/places/",
+            url:"search?term="+text_search,
             async: true,
             dataType:"Json",
             contenType:"application/Json; charset=utf-8",
             success: function(data){
-              var $subType = $("#cbo_type");
-              var $subTypeFilter = $("#cbo_type_filter");
-              $subType.empty();
-              $(data.results).each( function () {
-                $subType.append($('<option></option>').attr("value", this.id).text(this.name));
-                $subTypeFilter.append($('<option></option>').attr("value", this.id).text(this.name));
-               });
-             {% if profile %}
-             //{{profile}}
-             if ($("#cbo_type_filter option[value={{profile}}]").length ==1) {
-               $("#cbo_type_filter").val('{{profile}}').change();
-             }
-             {% endif %}
+              var cont=0;
+              $('#result_search').empty();
+              $(data.responseData.results).each( function () {
+                var marker = new google.maps.Marker({
+                  position:   new google.maps.LatLng(this.lat,this.lng),
+                  title : '<h3>'+ this.streetAddress + '</h3>' + this.titleNoFormatting +'<br/>'
+                }
+                );
+
+                var str_radio = '<input type="radio" name="options" id="options" value="'+cont+'"/>'+this.streetAddress+'<br/>'
+                  $('#result_search').append(str_radio);
+                results.push(marker);
+                cont++;
+              });
+              if ($(data.responseData.results).length>0){
+                $('#modal_search').modal('show');
+              }else{
+                swal({title: "No hay resultados", type: "warning",  text: "",   timer: 900,   showConfirmButton: false });
+              }
             },
           });
-        {% if admin %}
-        $("#modal").modal({}).draggable();
-        $("#modal").modal('hide');
-        $("#save").click(function(){
-         posting= $.post("/positions",{
-            name: $('input[name="name"]').val(),
-            lon: $('input[name="lat"]').val(),
-            lat: $('input[name="long"]').val(),
-            place: $('#cbo_type option:selected').val(),
-            csrfmiddlewaretoken : $('input[name="csrfmiddlewaretoken"]').val()
-          });
-          posting.done(function(){
-            swal("¡Buen Trabajo!", "Posicion Guardada", "success");
-            $("#modal").modal('hide');
-          });
-          posting.fail(function(){
-            swal("):", "¡Algo sucedió! Revisa los datos ", "error");
-            
-          });
-        });
-        $('#panel').click(function(){
-            swal({
-              title: "¿Deseas cerrar sesión?",
-              text: "Para seguir agregando posiciones o viendo el mapa deberás iniciar sesión de nuevo.",
-              type: "warning",
-              showCancelButton: true,
-              confirmButtonColor: "#DD6B55",
-              confirmButtonText: "Sí",
-              closeOnConfirm: false ,
-              cancelButtonText: "Cancelar"
-              },
-              function(){
-                swal("Sesión Cerrada", "¡Será un hasta la próxima!", "success"); 
-                setTimeout(function(){$(location).attr('href','/logout')},1200);
-              });
-        });
-        {% else %}
-        swal("Muestra el camino", "Escoge un punto, da click en muestrame el camino y te mostrará uno viable. No olvides permitir que el navegador envie tu posición.","info");
-        $('#panel').click(function(){
-              calcRoute(); 
-        });
-        $('#search').click(function(){
-            var text_search = $('input[name="text_search"]').val();
-            if(text_search.length>2){
-              $.ajax(
-              {
-                type:"GET",
-                url:"search?term="+text_search,
-                async: true,
-                dataType:"Json",
-                contenType:"application/Json; charset=utf-8",
-                success: function(data){
-                  var cont=0;
-                  $('#result_search').empty();
-                  $(data.responseData.results).each( function () {
-                    var marker = new google.maps.Marker({
-                          position:   new google.maps.LatLng(this.lat,this.lng),
-                          title : '<h3>'+ this.streetAddress + '</h3>' + this.titleNoFormatting +'<br/>'
-                       }
-                    );  
+    }
+  });
+  $('#modal_search').on('hide.bs.modal',function(){
+  });
+  $("#select_result").click(function(){
 
-                    var str_radio = '<input type="radio" name="options" id="options" value="'+cont+'"/>'+this.streetAddress+'<br/>'
-                    $('#result_search').append(str_radio);
-                    results.push(marker);
-                    cont++;
-                  });
-                  if ($(data.responseData.results).length>0){
-                    $('#modal_search').modal('show');
-                  }else{
-                    swal({title: "No hay resultados", type: "warning",  text: "",   timer: 900,   showConfirmButton: false });
-                  }
-                },
-              });
-            }
-         });
-         $('#modal_search').on('hide.bs.modal',function(){
-         });
-         $("#select_result").click(function(){
-
-          var selected = $('input[name="options"]:checked').val();
-          if (selected == null)
-            return ;
-          if (position_actual == null || typeof position_actual == 'undefined') {
-            swal("oops!","No se ha podido encontrar tu ubicación, debes aceptar que tu navegador lo permita. ", "error");
-            return 
-          }
-          swal({ 
-            title: "Escogiste el punto:",
-            text: results[selected].title,
-            type: "warning",
-            html: true,
-            showCancelButton: true,
-            confirmButtonColor: "#A5DC86",
-            confirmButtonText: "Muéstrame el camino",
-            closeOnConfirm: true,
-            cancelButtonText: "Cancelar"
-            },function(){
-              $("#modal_search").modal('hide');
-              var selected = $('input[name="options"]:checked').val();
-              position_final=results[selected].position;
-              calcRoute();
-              $('input[type="text"]').val('');
-            });         
-         });
-         {% endif %}
-         $("#btn_lateral").children().addClass('box_rotate box_transition');
+    var selected = $('input[name="options"]:checked').val();
+    if (selected == null)
+      return ;
+    if (position_actual == null || typeof position_actual == 'undefined') {
+      swal("oops!","No se ha podido encontrar tu ubicación, debes aceptar que tu navegador lo permita. ", "error");
+      return
+    }
+    swal({
+      title: "Escogiste el punto:",
+      text: results[selected].title,
+      type: "warning",
+      html: true,
+      showCancelButton: true,
+      confirmButtonColor: "#A5DC86",
+      confirmButtonText: "Muéstrame el camino",
+      closeOnConfirm: true,
+      cancelButtonText: "Cancelar"
+    },function(){
+      $("#modal_search").modal('hide');
+      var selected = $('input[name="options"]:checked').val();
+      position_final=results[selected].position;
+      calcRoute();
+      $('input[type="text"]').val('');
+    });
+  });
+  {% endif %}
+  $("#btn_lateral").children().addClass('box_rotate box_transition');
 
 
-      });
+});
 
 
     </script>
@@ -502,13 +502,13 @@
       <!--<img src="{% static 'img/logo.png' %}" height="70">-->
     </div>
     <div id="panel">
-    {% if admin %}
-      <span class="fa fa-power-off"></span>     
+      {% if admin %}
+      <span class="fa fa-power-off"></span>
       Cerrar Sesi&oacuten
-    {% else %}
+      {% else %}
       <i class="fa fa-map-marker"></i>
-      Mu&eacutestrame el camino 
-    {% endif %}
+      Mu&eacutestrame el camino
+      {% endif %}
     </div>
     <div id="btn_lateral">
       <div>
@@ -518,7 +518,7 @@
     <div id="lateral">
       <div style="">
         <div class="title">
-        <b>Filtrar por tipo:</b>
+          <b>Filtrar por tipo:</b>
         </div>
         <div class="form">
           <select name="tipo_filtro" id="cbo_type_filter">
@@ -526,7 +526,7 @@
           </select>
         </div>
         {% if not admin %}
-          
+
         <b>Modo de transporte: </b>
         <select id="mode">
           <option value="DRIVING">Conduciendo</option>
@@ -534,7 +534,7 @@
           <option value="BICYCLING">Bicicleta</option>
           <option value="TRANSIT" >Transitando</option>
         </select>
-        <br/>        
+        <br/>
         <b>B&uacutesqueda:</b>
         <div class="form">
           <input type="text" autocomplete="on" name="text_search" ></input> <br/>
@@ -554,7 +554,7 @@
           </div>
           <div class="modal-body-center">
             <div style="margin-left:200px;margin-right:30px;">
-              {% csrf_token %}  
+              {% csrf_token %}
               <input type="text" name="name" placeholder="Titulo"><br/>
               <input type="text" name="long" placeholder="long" readonly><br/>
               <input type="text" name="lat" placeholder="lat" readonly><br/>
@@ -579,7 +579,7 @@
           </div>
           <div class="modal-body-center">
             <div id="result_search" style="margin-left:50px;margin-right:30px;">
-             
+
             </div>
           </div>
           <div class="modal-footer">

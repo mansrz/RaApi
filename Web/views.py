@@ -117,7 +117,7 @@ def map(request):
             lng = request.GET.get('lng', False)
             profile = request.GET.get('profile', False)
             context = {'lat':lat, 'lng':lng, 'profile':profile}
-            print profile
+            print (profile)
         return render(request, template, context)
 
 def home(request):
@@ -160,14 +160,14 @@ def login(request):
         # Return an 'invalid login' error message.
          return render(request, 'login.html', {'error':'Credenciales no encontradas' })
 
-         
+
 @never_cache
 def logout(request):
     from django.contrib.auth import logout
     logout(request)
     return redirect('/')
 
-       
+
 def search(request):
     if request.method == 'GET':
         term = request.GET.get('term')
@@ -209,16 +209,25 @@ def existposition(pos):
     val = Position.objects.filter(latitude = pos.latitude, longitude = pos.longitude)
     return len(val)>0
 
+def getSchedule(request):
+    if request.method == 'GET':
+        position = request.GET.get('position',None)
+        if codmat is not None:
+            obj_pos = Position.objects.get(pk = position)
+            schedulers = obj_pos.schedules
+            #TODO get hour and compare with all schedules
+            #Return Schedule that is compare true
+
 def getPoints(request):
     if request.method == 'GET':
         status =True
         profiles = Profile.objects.all()
         for profile_ in profiles:
-            if not profile_.url is None: 
+            if not profile_.url is None:
                 import json
                 import urllib2
                 url = profile_.url
-                print url
+                print (url)
                 data = json.load(urllib2.urlopen(url))
                 points = []
                 features = data['features']
@@ -244,7 +253,7 @@ def getPoints(request):
                                 position.planta = value
                             elif d == 'DESCRIPCIO':
                                 position.descripction = value
-                            elif d == 'UNIDAD': 
+                            elif d == 'UNIDAD':
                                 position.unidad = value
                             elif d == 'COTA':
                                 position.cota = value
@@ -264,5 +273,26 @@ def getPoints(request):
             return HttpResponse('todo bien')
         else:
             return HttpResponseBadRequest('no habia una url')
+
+def getSchedule(request):
+    if request.method == 'GET':
+        position = request.GET.get('pos',None)
+        if position:
+            pos = Position.objects.get(pk = position)
+            if pos is not None:
+                schedulers = pos.schedules
+                if schedulers is not None:
+                    if len(schedulers)>0:
+                        response = render_to_response(
+                                'schedule.json',
+                                {'schedule':schedule},
+                                context_instance=RequestContext(request)
+                                )
+                        response['Content-Type'] = 'application/json; charset=utf-8'
+                        response['Cache-Control'] = 'no-cache'
+                        return response
+        return HttpResponseBadRequest('incorrecto')
+
+
 
 
