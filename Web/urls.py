@@ -21,5 +21,6 @@ urlpatterns = patterns('',
     url(r'^search','Web.views.search', name ='search'),
     url(r'^user','Web.views.verifyUser', name ='verifyuser'),
     url(r'^update','Web.views.getPoints', name ='getpoitns'),
+    url(r'^schedule','Web.views.getSchedule', name='getschedule'),
 
 )
