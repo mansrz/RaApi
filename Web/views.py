@@ -295,12 +295,8 @@ def compare(day, hour, minute, numday, acthour_ini, acthour_fin):
     day = getDay(day)
     if day != numday:
         return False
-    print numday
-    print day
     data_time_ini = getHourAndMinute(acthour_ini)
-    print data_time_ini
     data_time_fin = getHourAndMinute(acthour_fin)
-    print data_time_fin
     if hour >= (int(data_time_ini[0])) and minute >= (int(data_time_ini[1])):
         if hour <= (int(data_time_fin[0])) and minute < (int(data_time_fin[1])):
             return True
@@ -316,7 +312,7 @@ def getSchedule(request):
         codigo = request.GET.get('codigo',None)
         if codigo:
             pos = Schedule.objects.get(aula__icontains = codigo)
-            for p in pos: 
+            for p in pos:
                 if compare(p.day, hour, minute, day, p.hora_inicio, p.hora_fin):
                     schedulers = p
             if schedulers is not None:
