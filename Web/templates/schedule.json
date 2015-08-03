@@ -6,9 +6,11 @@
     {
       name: "{{ schedule.name }}",
       codmat: "{{ schedule.codmat }}",
-      horainit: "{{ schedule.horainit }}",
-      horafin: "{{ schedule.horafin }}",
-      aula: {{ schedule.aula }}
+      horainit: "{{ schedule.hora_inicio }}",
+      horafin: "{{ schedule.hora_fin }}",
+      dia: "{{schedule.dia}}",
+      bloque: "{{schedule.bloquecampus}}",
+      aula: "{{ schedule.aula }}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
   ]
