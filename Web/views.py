@@ -314,7 +314,7 @@ def getSchedule(request):
         if codigo:
             pos = Schedule.objects.filter(aula__icontains = codigo)
             for p in pos:
-                if compare(p.day, hour, minute, day, p.hora_inicio, p.hora_fin):
+                if compare(p.dia, hour, minute, day, p.hora_inicio, p.hora_fin):
                     schedulers = p
             if schedulers is not None:
                 response = render_to_response(
