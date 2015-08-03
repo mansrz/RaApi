@@ -276,7 +276,7 @@ def getPoints(request):
 
 def getDay(day):
     return {
-            'LUNES':7,
+            'LUNES':0,
             'MARTES':1,
             'MIERCOLES':2,
             'JUEVES':3,
@@ -298,33 +298,58 @@ def compare(day, hour, minute, numday, acthour_ini, acthour_fin):
     data_time_ini = getHourAndMinute(acthour_ini)
     data_time_fin = getHourAndMinute(acthour_fin)
     if hour >= (int(data_time_ini[0])) and minute >= (int(data_time_ini[1])):
-        if hour <= (int(data_time_fin[0])) and minute < (int(data_time_fin[1])):
-            return True
+        print hour
+        print data_time_fin[0]
+        if hour <= (int(data_time_fin[0])):
+            print hour
+            print 'hora'
+            print data_time_fin[0]
+            if(int(data_time_fin[1]))<minute:
+                print minute
+                print data_time_fin[1]
+                print 'fin'
+                return True
     return False
 
 def getSchedule(request):
-    import datetime
-    current_time = datetime.datetime.now()
+    from django.utils import timezone
+    current_time = timezone.now()
+    print current_time
     day = current_time.weekday()
     hour = current_time.time().hour
     minute = current_time.time().minute
-    schedulers = None
+    schedulers = []
     if request.method == 'GET':
         codigo = request.GET.get('codigo',None)
-        if codigo:
+        filter = request.GET.get('filter',None)
+        if not codigo:
+            return HttpResponseBadRequest('Parametro incorreto')
+        if not filter:
             pos = Schedule.objects.filter(aula__icontains = codigo)
             for p in pos:
-                if compare(p.dia, hour, minute, day, p.hora_inicio, p.hora_fin):
-                    schedulers = p
+                 if compare(p.dia, hour, minute, day, p.hora_inicio, p.hora_fin):
+                    schedulers.append(p)
+            print schedulers
             if schedulers is not None:
                 response = render_to_response(
                         'schedule.json',
-                        {'schedule':schedule},
+                        {'schedulers':schedulers},
                         context_instance=RequestContext(request)
                         )
                 response['Content-Type'] = 'application/json; charset=utf-8'
                 response['Cache-Control'] = 'no-cache'
                 return response
+        else:
+            schedulers = Schedule.objects.filter(aula__icontains = codigo)
+        if schedulers is not None:
+            response = render_to_response(
+                    'schedule.json',
+                    {'schedulers':schedulers},
+                    context_instance=RequestContext(request)
+                    )
+            response['Content-Type'] = 'application/json; charset=utf-8'
+            response['Cache-Control'] = 'no-cache'
+            return response
         return HttpResponseBadRequest('incorrecto')
 
 
