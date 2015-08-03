@@ -308,10 +308,11 @@ def getSchedule(request):
     day = current_time.weekday()
     hour = current_time.time().hour
     minute = current_time.time().minute
+    schedulers = None
     if request.method == 'GET':
         codigo = request.GET.get('codigo',None)
         if codigo:
-            pos = Schedule.objects.get(aula__icontains = codigo)
+            pos = Schedule.objects.filter(aula__icontains = codigo)
             for p in pos:
                 if compare(p.day, hour, minute, day, p.hora_inicio, p.hora_fin):
                     schedulers = p
