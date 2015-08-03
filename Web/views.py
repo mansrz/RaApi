@@ -322,6 +322,7 @@ def getSchedule(request):
     if request.method == 'GET':
         codigo = request.GET.get('codigo',None)
         filter = request.GET.get('filter',None)
+        is_day = request.GET.get('day',None)
         if not codigo:
             return HttpResponseBadRequest('Parametro incorreto')
         if not filter:
@@ -340,7 +341,14 @@ def getSchedule(request):
                 response['Cache-Control'] = 'no-cache'
                 return response
         else:
-            schedulers = Schedule.objects.filter(aula__icontains = codigo)
+            pos = Schedule.objects.filter(aula__icontains = codigo)
+            if is_day:
+                for p in pos:
+                    actual_day = getDay(p.dia)
+                    if actual_day == day:
+                        schedulers.append(p)
+            else:
+                schedulers = pos
         if schedulers is not None:
             response = render_to_response(
                     'schedule.json',
