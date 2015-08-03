@@ -8,6 +8,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
 
+class SchedulerViewSet(viewsets.ModelViewSet):
+    serializer_class = SchedulerSerializer
+    queryset = Schedule.objects.all()
+
 class PositionViewSet(viewsets.ModelViewSet):
     serializer_class = PositionSerializer
     queryset = Position.objects.all()

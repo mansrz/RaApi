@@ -5,6 +5,7 @@ from Web.viewsets import *
 router = routers.DefaultRouter()
 router.register(r'profiles', ProfileViewSet)
 router.register(r'position', PositionViewSet)
+router.register(r'schedule', SchedulerViewSet)
 
 urlpatterns = patterns('',
     # Examples:
