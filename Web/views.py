@@ -209,15 +209,6 @@ def existposition(pos):
     val = Position.objects.filter(latitude = pos.latitude, longitude = pos.longitude)
     return len(val)>0
 
-def getSchedule(request):
-    if request.method == 'GET':
-        position = request.GET.get('position',None)
-        if codmat is not None:
-            obj_pos = Position.objects.get(pk = position)
-            schedulers = obj_pos.schedules
-            #TODO get hour and compare with all schedules
-            #Return Schedule that is compare true
-
 def getPoints(request):
     if request.method == 'GET':
         status =True
@@ -297,24 +288,21 @@ def compare(day, hour, minute, numday, acthour_ini, acthour_fin):
         return False
     data_time_ini = getHourAndMinute(acthour_ini)
     data_time_fin = getHourAndMinute(acthour_fin)
-    if hour >= (int(data_time_ini[0])) and minute >= (int(data_time_ini[1])):
-        print hour
-        print data_time_fin[0]
-        if hour <= (int(data_time_fin[0])):
-            print hour
-            print 'hora'
-            print data_time_fin[0]
-            if(int(data_time_fin[1]))<minute:
-                print minute
-                print data_time_fin[1]
-                print 'fin'
-                return True
+    if hour == (int(data_time_ini[0])) and minute < (int(data_time_ini[1])):
+        return False
+    if hour > (int(data_time_ini[0])) and  hour < (int(data_time_fin[0])):
+            return True
+    elif hour == (int(data_time_fin[0])):
+        if(int(data_time_fin[1])) >= minute:
+            return True
+    elif hour == (int(data_time_ini[0])) and minute > (int(data_time_ini[1])):
+        return True
+
     return False
 
 def getSchedule(request):
     from django.utils import timezone
     current_time = timezone.now()
-    print current_time
     day = current_time.weekday()
     hour = current_time.time().hour
     minute = current_time.time().minute
@@ -330,7 +318,6 @@ def getSchedule(request):
             for p in pos:
                  if compare(p.dia, hour, minute, day, p.hora_inicio, p.hora_fin):
                     schedulers.append(p)
-            print schedulers
             if schedulers is not None:
                 response = render_to_response(
                         'schedule.json',
