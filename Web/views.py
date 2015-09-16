@@ -7,8 +7,7 @@ from django.views.decorators.cache import never_cache
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseForbidden
 from suds.xsd.doctor import ImportDoctor, Import
 from suds.client import Client
-
-
+from operator import itemgetter, attrgetter, methodcaller
 from models import *
 # Create your views here.
 
@@ -297,8 +296,29 @@ def compare(day, hour, minute, numday, acthour_ini, acthour_fin):
             return True
     elif hour == (int(data_time_ini[0])) and minute > (int(data_time_ini[1])):
         return True
-
     return False
+
+def order_by_hour(schedulers):
+    order = []
+    result = []
+    for schedule in schedulers:
+        hora = getHourAndMinute(schedule.hora_inicio)[0]
+        order.append((int(hora),schedule))
+    order = sorted(order, key = itemgetter(0))
+    for item in order:
+        result.append(item[1])
+    return result
+
+def order_by_day(schedulers):
+    order = []
+    result = []
+    for schedule in schedulers:
+        dia = schedule.dia
+        order.append((getDay(dia),schedule))
+    order = sorted(order, key = itemgetter(0))
+    for item in order:
+        result.append(item[1])
+    return result
 
 def getSchedule(request):
     from django.utils import timezone
@@ -313,30 +333,22 @@ def getSchedule(request):
         is_day = request.GET.get('day',None)
         if not codigo:
             return HttpResponseBadRequest('Parametro incorreto')
-        if not filter:
+        if filter or is_day:
             pos = Schedule.objects.filter(aula__icontains = codigo)
-            for p in pos:
-                 if compare(p.dia, hour, minute, day, p.hora_inicio, p.hora_fin):
-                    schedulers.append(p)
-            if schedulers is not None:
-                response = render_to_response(
-                        'schedule.json',
-                        {'schedulers':schedulers},
-                        context_instance=RequestContext(request)
-                        )
-                response['Content-Type'] = 'application/json; charset=utf-8'
-                response['Cache-Control'] = 'no-cache'
-                return response
-        else:
-            pos = Schedule.objects.filter(aula__icontains = codigo)
+            if filter:
+                for p in pos:
+                    if compare(p.dia, hour, minute, day, p.hora_inicio, p.hora_fin):
+                        schedulers.append(p)
             if is_day:
                 for p in pos:
                     actual_day = getDay(p.dia)
                     if actual_day == day:
                         schedulers.append(p)
-            else:
-                schedulers = pos
+        else:
+            schedulers = Schedule.objects.filter(aula__icontains = codigo)
         if schedulers is not None:
+            schedulers = order_by_hour(schedulers)
+            schedulers = order_by_day(schedulers)
             response = render_to_response(
                     'schedule.json',
                     {'schedulers':schedulers},
